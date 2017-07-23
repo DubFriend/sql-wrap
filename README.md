@@ -4,7 +4,7 @@ Makes working with sql easy
 
 `npm install sql-wrap`
 
-##Instantiation
+## Instantiation
 
 let pool = mysql.createPool(config.mysql);
 that.sql = createNodeMySQL(pool);
@@ -56,7 +56,7 @@ var sql = createNodeMySQL(poolCluster, {
 
 
 
-##Methods
+## Methods
 
 In general node-mysql-wrap exposes the same interface as node-mysql.  All methods
 take callbacks with the same `function (err, res) {}` signature as node-mysql.
@@ -65,7 +65,7 @@ In addition all methods also return [q](https://github.com/kriskowal/q) promises
 In the following examples, parameters marked with an asterik (\*) character are
 optional.
 
-###query(sqlStatement, \*values)
+### query(sqlStatement, \*values)
 ```javascript
 sql.query('SELECT name FROM fruit WHERE color = "yellow"')
 .then(function (res) {
@@ -87,7 +87,7 @@ sql.query({
 });
 ```
 
-###queryStream(sqlStatement, \*values)
+### queryStream(sqlStatement, \*values)
 ```javascript
 sql.queryStream('SELECT name FROM fruit WHERE color = "yellow"')
 .then(function (stream) {
@@ -103,18 +103,18 @@ sql.queryStream('SELECT name FROM fruit WHERE color = "yellow"')
 });
 ```
 
-###one(sqlStatement, \*values)
+### one(sqlStatement, \*values)
 Works the same as sql.query except it only returns a single row instead of an array
 of rows.  Adds a "LIMIT 1" clause if a LIMIT clause is not allready present in
 the sqlStatement.
 
-###select(table, \*whereEqualsObject)
+### select(table, \*whereEqualsObject)
 ```javascript
 // equivalent to sql.query('SELECT * FROM fruit WHERE color = "yellow" AND isRipe = "true"')
 sql.select('fruit', { color: 'yellow', isRipe: true })
 ```
 
-###selectStream(table, \*whereEqualsObject)
+### selectStream(table, \*whereEqualsObject)
 ```javascript
 sql.selectStream('fruit')
 .then(function (stream) {
@@ -129,7 +129,7 @@ sql.selectStream('fruit')
 });
 ```
 
-###selectOne(table, \*whereEqualsObject, \*callback)
+### selectOne(table, \*whereEqualsObject, \*callback)
 Same as sql.select except selectOne returns a single row instead of an array of rows.
 
 
@@ -149,7 +149,7 @@ sql.select({
 
 
 
-###insert(table, insertObject, \*callback)
+### insert(table, insertObject, \*callback)
 ```javascript
 sql.insert('fruit', { name: 'plum', color: 'purple' });
 ```
@@ -161,13 +161,13 @@ sql.insert('fruit', [
 ])
 ```
 
-###replace(table, insertObject, \*callback)
+### replace(table, insertObject, \*callback)
 [Supports Mysql "REPLACE INTO" syntax](https://dev.mysql.com/doc/refman/5.0/en/replace.html)
 ```javascript
 sql.replace('fruit', { uniqueKey: 5, name: 'plum', isRipe: false, color: 'brown' });
 ```
 
-###save(table, insertObject, \*callback)
+### save(table, insertObject, \*callback)
 Inserts a new row if no duplicate unique or primary keys
 are found, else it updates that row.
 ```sql
@@ -178,12 +178,12 @@ ON DUPLICATE KEY UPDATE uniqueKey=5, isRipe=0
 sql.save('fruit', { uniqueKey: 5, isRipe: false });
 ```
 
-###update(table, setValues, \*whereEqualsObject, \*callback)
+### update(table, setValues, \*whereEqualsObject, \*callback)
 ```javascript
 sql.update('fruit', { isRipe: false }, { name: 'grape' })
 ```
 
-###delete(table, \*whereEqualsObject, \*callback)
+### delete(table, \*whereEqualsObject, \*callback)
 ```javascript
 sql.delete('fruit', { isRipe: false })
 ```
