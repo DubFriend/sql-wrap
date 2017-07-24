@@ -245,11 +245,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(
-          cursorFig({
-            last: 1,
-          })
-        )
+        .run(cursorFig({ last: 1 }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 3,
@@ -266,12 +262,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(
-          cursorFig({
-            first: 100,
-            after: toCursor(a, 'a'),
-          })
-        )
+        .run(cursorFig({ first: 100, after: toCursor(a, 'a') }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 2,
@@ -288,12 +279,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(
-          cursorFig({
-            last: 100,
-            before: toCursor(c, 'a'),
-          })
-        )
+        .run(cursorFig({ last: 100, before: toCursor(c, 'a') }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 2,
@@ -332,12 +318,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(
-          cursorFig({
-            last: 1,
-            after: toCursor(a, 'a'),
-          })
-        )
+        .run(cursorFig({ last: 1, after: toCursor(a, 'a') }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 2,
@@ -354,12 +335,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(
-          cursorFig({
-            first: 1,
-            before: toCursor(c, 'a'),
-          })
-        )
+        .run(cursorFig({ first: 1, before: toCursor(c, 'a') }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 2,
@@ -376,12 +352,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(
-          cursorFig({
-            last: 1,
-            before: toCursor(c, 'a'),
-          })
-        )
+        .run(cursorFig({ last: 1, before: toCursor(c, 'a') }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 2,
@@ -399,12 +370,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(
-          cursorFig({
-            orderBy: orderBy,
-            first: 100,
-          })
-        )
+        .run(cursorFig({ orderBy: orderBy, first: 100 }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 3,
@@ -424,12 +390,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(
-          cursorFig({
-            orderBy: orderBy,
-            first: 100,
-          })
-        )
+        .run(cursorFig({ orderBy: orderBy, first: 100 }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 3,

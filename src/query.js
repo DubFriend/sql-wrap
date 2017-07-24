@@ -316,7 +316,6 @@ module.exports = ({
       return s;
     };
 
-    // make type system happy
     const buildSelf: any = {
       select: wrap('select'),
       update: wrap('update'),

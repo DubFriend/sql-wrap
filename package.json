@@ -2,7 +2,7 @@
   "name": "sql-wrap",
   "version": "0.0.0",
   "description": "Makes working with sql easy",
-  "main": "index.js",
+  "main": "lib/index.js",
   "repository": {
     "type": "git",
     "url": "git@github.com:DubFriend/sql-wrap.git"
