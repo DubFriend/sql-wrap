@@ -115,11 +115,13 @@ export type SqlWrapQueryBuilder = {|
     joinWhere: string
   ) => SqlWrapQueryBuilder,
   run: (fig?: {|
+    resultCount?: boolean,
     nestTables?: boolean,
     paginate?: SqlWrapPagination,
     cursor?: SqlWrapCursor,
   |}) => Promise<Array<Object> | SqlWrapQueryWriteOutput>,
   one: (fig?: {|
+    resultCount?: boolean,
     nestTables?: boolean,
     paginate?: SqlWrapPagination,
     cursor?: SqlWrapCursor,

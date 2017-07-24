@@ -20,15 +20,15 @@ import createQuery from './query';
 import squel from 'squel';
 
 module.exports = ({
-  connectionPool,
+  driver,
   sqlType,
 }: {
-  connectionPool: SqlWrapConnectionPool,
+  driver: SqlWrapConnectionPool | SqlWrapConnection,
   sqlType: SqlWrapType,
 }) => {
   const self = {};
 
-  const query = createQuery({ connectionPool });
+  const query = createQuery({ driver, sqlType });
 
   const prepareInsertRows = (rows: Array<Object>) => {
     const values = [];

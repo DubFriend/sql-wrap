@@ -22,57 +22,42 @@ import createRead from './read';
 import createWrite from './write';
 
 module.exports = ({
-  connectionPool,
+  driver,
   sqlType,
 }: {
-  connectionPool: SqlWrapConnectionPool,
+  driver: SqlWrapConnectionPool,
   sqlType: SqlWrapType,
 }) => {
   const self = {};
 
-  const query = createQuery({ connectionPool });
-  const read = createRead({ connectionPool, sqlType });
-  const write = createWrite({ connectionPool, sqlType });
+  const query = createQuery({ driver, sqlType });
+  const read = createRead({ driver, sqlType });
+  const write = createWrite({ driver, sqlType });
 
-  self.query = (
-    textOrConfig: string | SqlWrapQueryConfig,
-    values?: SqlWrapInputValues
-  ): Promise<Array<Object> | SqlWrapQueryWriteOutput> =>
+  self.query = (textOrConfig: *, values?: *): * =>
     query.rows(textOrConfig, values);
 
-  self.queryStream = (
-    textOrConfig: string | SqlWrapQueryStreamConfig,
-    values?: SqlWrapInputValues
-  ) => {};
+  self.one = self.queryStream = (textOrConfig: *, values?: *): * =>
+    query.row(textOrConfig, values);
 
-  self.select = (
-    testOrConfig: string | SqlWrapSelectConfig,
-    where?: Object
-  ) => {};
+  // self.select = (testOrConfig: *, where?: *) =>
+  //   read.select(textOrConfig, where);
 
-  self.selectStream = (
-    testOrConfig: string | SqlWrapSelectStreamConfig,
-    values?: SqlWrapInputValues
-  ) => {};
+  // self.selectStream = (testOrConfig: *, where?: *): * =>
+  //   read.selectStream(textOrConfig, where);
 
-  self.insert = (
-    table: string,
-    rowOrRows: Array<Object> | Object
-  ): Promise<*> => write.insert(table, rowOrRows);
+  self.insert = (table: *, rowOrRows: *): * => write.insert(table, rowOrRows);
 
-  self.replace = (table: string, rowOrRows: Array<Object> | Object) => {};
+  // self.replace = (table: *, rowOrRows: *): * => write.replace(table, rowOrRows);
 
-  self.save = (table: string, rowOrRows: Array<Object> | Object) => {};
+  // self.save = (table: *, rowOrRows: *) => write.save(table, rowOrRows);
 
-  self.update = (
-    table: string,
-    rowOrRows: Array<Object> | Object,
-    where?: Object
-  ) => {};
+  // self.update = (table: *, rowOrRows: *, where?: *): * =>
+  //   write.update(table, rowOrRows, where);
 
-  self.delete = (table: string, where?: Object) => {};
+  // self.delete = (table: *, where?: *): * => write.delete(table, where);
 
-  self.build = () => {};
+  self.build = (): * => query.build();
 
   return self;
 };

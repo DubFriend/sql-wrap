@@ -18,15 +18,15 @@ import _ from 'lodash';
 import createQuery from './query';
 
 module.exports = ({
-  connectionPool,
+  driver,
   sqlType,
 }: {
-  connectionPool: SqlWrapConnectionPool,
+  driver: SqlWrapConnectionPool | SqlWrapConnection,
   sqlType: SqlWrapType,
 }) => {
   const self = {};
 
-  const query = createQuery({ connectionPool });
+  const query = createQuery({ driver, sqlType });
 
   return self;
 };

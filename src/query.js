@@ -20,7 +20,7 @@ import type {
   SqlWrapQueryBuilder,
 } from './type';
 
-import type Promise from 'bluebird';
+import Promise from 'bluebird';
 import _ from 'lodash';
 import squel from 'squel';
 
@@ -74,11 +74,32 @@ const resolveRowsConfig = (
 };
 
 module.exports = ({
-  connectionPool,
+  driver,
+  sqlType,
 }: {
-  connectionPool: SqlWrapConnectionPool,
+  driver: SqlWrapConnectionPool | SqlWrapConnection,
+  sqlType: SqlWrapType,
 }) => {
   const self = {};
+
+  const getConnection = (): Promise<SqlWrapConnection> => {
+    const connectionPromise: any =
+      typeof driver.getConnection === 'function'
+        ? driver.getConnection()
+        : Promise.resolve(driver);
+
+    return connectionPromise;
+  };
+
+  const connectionDone = (
+    connection: SqlWrapConnectionPool | SqlWrapConnection
+  ): void => {
+    if (typeof connection.release === 'function') {
+      connection.release();
+    }
+  };
+
+  const stripLimit = sql => sql.replace(/ LIMIT .*/i, '');
 
   const runCursor = (q, fig) => {
     const orderBy = mapOrderBy(fig.orderBy);
@@ -87,7 +108,7 @@ module.exports = ({
     const decodeCursor = c =>
       _.map(
         new Buffer(c, 'base64').toString('ascii').split(CURSOR_DELIMETER),
-        (v, i) => (orderBy[i].deserialize ? orderBy[i].deserialize(v) : v)
+        (v, i) => orderBy[i].deserialize(v)
       );
 
     const buildWhereArgs = (values, isGreaterThan) => {
@@ -111,10 +132,7 @@ module.exports = ({
           mappedValues = mappedValues.concat(w.mappedValues);
         }
 
-        return {
-          sqls: sqls,
-          mappedValues: mappedValues,
-        };
+        return { sqls, mappedValues };
       };
 
       const w = build(values, orderBy, isGreaterThan);
@@ -138,31 +156,44 @@ module.exports = ({
 
     q.limit(isAscending ? fig.first : fig.last);
 
-    const query = q.toParam();
+    const { text, values } = q.toParam();
 
     return self
-      .query(
-        {
-          sql: query.text,
-          resultCount: true,
-        },
-        query.values
-      )
+      .rows({
+        sql: text,
+        values,
+        resultCount: true,
+      })
       .then(resp => {
-        if (isAscending && fig.last && fig.last < resp.results.length) {
-          resp.results = resp.results.slice(
-            resp.results.length - fig.last,
-            resp.results.length
-          );
-        } else if (!isAscending && fig.last && fig.last < resp.results.length) {
-          resp.results = resp.results.slice(0, fig.last);
-        }
+        if (
+          typeof resp.results === 'object' &&
+          Array.isArray(resp.results) &&
+          typeof resp.resultCount === 'number'
+        ) {
+          const r = {};
+          r.resultCount = resp.resultCount;
+          if (isAscending && fig.last && fig.last < resp.results.length) {
+            r.results = resp.results.slice(
+              resp.results.length - fig.last,
+              resp.results.length
+            );
+          } else if (
+            !isAscending &&
+            fig.last &&
+            fig.last < resp.results.length
+          ) {
+            r.results = resp.results.slice(0, fig.last);
+          } else {
+            r.results = resp.results;
+          }
 
-        if (!isAscending) {
-          resp.results = resp.results.reverse();
+          if (!isAscending) {
+            r.results = resp.results.reverse();
+          }
+          return r;
+        } else {
+          return Promise.reject(new Error("this shouldn't happen"));
         }
-
-        return resp;
       })
       .then(resp => ({
         resultCount: resp.resultCount,
@@ -199,28 +230,80 @@ module.exports = ({
   self.rows = (
     textOrConfig: string | SqlWrapQueryConfig,
     maybeValues?: SqlWrapInputValues
-  ): Promise<SqlWrapQueryWriteOutput | Array<Object>> => {
-    const { sql, values } = resolveRowsConfig(textOrConfig, maybeValues);
-    return connectionPool.query({ sql, values });
+  ): Promise<
+    | SqlWrapQueryWriteOutput
+    | Array<Object>
+    | {
+      results: Array<Object>,
+      resultCount: number,
+    }
+  > => {
+    const {
+      sql,
+      nestTables,
+      paginate,
+      resultCount,
+      values,
+    } = resolveRowsConfig(textOrConfig, maybeValues);
+
+    if (typeof resultCount === 'boolean') {
+      const addCalcFoundRows = sql => {
+        const pieces = sql.split(' ');
+        pieces.splice(1, 0, 'SQL_CALC_FOUND_ROWS');
+        return pieces.join(' ');
+      };
+      return getConnection().then(conn => {
+        return conn
+          .query({ sql: addCalcFoundRows(sql), nestTables, values })
+          .then(rows =>
+            conn
+              .query({ sql: 'SELECT FOUND_ROWS() AS count', values: [] })
+              .then(([{ count }]) => {
+                connectionDone(conn);
+                const resp: any = {
+                  resultCount: Number(count),
+                  results: rows,
+                };
+                return resp;
+              })
+              .catch(err => {
+                connectionDone(conn);
+                return Promise.reject(err);
+              })
+          );
+      });
+    } else {
+      return driver.query({ sql, nestTables, values });
+    }
+  };
+
+  self.row = (
+    textOrConfig: string | SqlWrapQueryConfig,
+    maybeValues?: SqlWrapInputValues
+  ): Promise<SqlWrapQueryWriteOutput | Object> => {
+    const config = resolveRowsConfig(textOrConfig, maybeValues);
+    config.sql = stripLimit(config.sql) + ' LIMIT 1';
+    return self
+      .rows(textOrConfig, maybeValues)
+      .then(resp => (Array.isArray(resp) ? _.first(resp) : resp));
   };
 
   self.build = (): SqlWrapQueryBuilder => {
     const wrap = method => () => {
       const s = squel[method]();
 
-      s.run = fig => {
-        fig = fig || {};
+      s.run = (fig = {}) => {
         if (fig.cursor) {
           return runCursor(s, fig.cursor);
         } else {
-          const p = s.toParam();
-          return self.query(_.extend({ sql: p.text }, fig), p.values);
+          const { text, values } = s.toParam();
+          return self.rows(_.extend({ sql: text, values }, fig));
         }
       };
 
-      s.one = fig => {
-        const p = s.toParam();
-        return self.one(_.extend({ sql: p.text }, fig || {}), p.values);
+      s.one = (fig = {}) => {
+        const { text, values } = s.toParam();
+        return self.row(_.extend({ sql: text, values }, fig));
       };
 
       s.whereIfDefined = (sql, value) => {
