@@ -93,8 +93,21 @@ export type SqlWrapQueryBuilder = {|
   update: () => SqlWrapQueryBuilder,
   delete: () => SqlWrapQueryBuilder,
   insert: () => SqlWrapQueryBuilder,
+  into: (table: string) => SqlWrapQueryBuilder,
+  table: (table: string) => SqlWrapQueryBuilder,
+  set: (name: string, value: mixed, options?: Object) => SqlWrapQueryBuilder,
+  setFields: (fields: Object, options?: Object) => SqlWrapQueryBuilder,
+  setFieldsRows: (
+    fields: Array<Object>,
+    options?: Object
+  ) => SqlWrapQueryBuilder,
   from: (table: string, tableNickName?: string) => SqlWrapQueryBuilder,
   where: (statement: string, value?: mixed) => SqlWrapQueryBuilder,
+  onDupUpdate: (
+    field: string,
+    value: mixed,
+    options?: Object
+  ) => SqlWrapQueryBuilder,
   whereIfDefined: (statement: string, value?: mixed) => SqlWrapQueryBuilder,
   set: (
     field: string,

@@ -22,7 +22,7 @@ import type {
 
 import Promise from 'bluebird';
 import _ from 'lodash';
-import squel from 'squel';
+import squelUnflavored from 'squel';
 
 const CURSOR_DELIMETER = '#';
 
@@ -80,6 +80,7 @@ module.exports = ({
   driver: SqlWrapConnectionPool | SqlWrapConnection,
   sqlType: SqlWrapType,
 }) => {
+  const squel = squelUnflavored.useFlavour(sqlType);
   const self = {};
 
   const getConnection = (): Promise<SqlWrapConnection> => {
