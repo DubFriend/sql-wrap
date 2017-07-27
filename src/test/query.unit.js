@@ -98,6 +98,75 @@ describe('query', () => {
         .then(rows => {
           expect(rows).to.deep.equal([]);
         }));
+
+    it('should have option to nest join', () =>
+      Promise.all([
+        insert('key', { id: 'A' }),
+        insert('compoundKey', { a: 'A', b: 'B' }),
+      ]).then(() =>
+        query
+          .rows({
+            sql: `SELECT * FROM \`key\` k
+              JOIN compoundKey ck
+              ON k.id = ck.a`,
+            nestTables: true,
+          })
+          .then(rows => {
+            expect(rows).to.deep.equal([
+              {
+                k: { id: 'A' },
+                ck: { a: 'A', b: 'B' },
+              },
+            ]);
+          })
+      ));
+
+    it('should option to return resultCount', () =>
+      insert('key', { id: 'A' })
+        .then(() =>
+          query.rows({ sql: 'SELECT * FROM `key`', resultCount: true })
+        )
+        .then(resp => {
+          chai.assert.deepEqual(resp, {
+            resultCount: 1,
+            results: [{ id: 'A' }],
+          });
+        }));
+
+    it('should have option to paginate', () =>
+      Promise.all([insert('key', { id: 'A' }), insert('key', { id: 'B' })])
+        .then(() =>
+          query.rows({
+            sql: 'SELECT * FROM `key` ORDER BY id',
+            paginate: {
+              page: 1,
+              resultsPerPage: 1,
+            },
+          })
+        )
+        .then(resp => {
+          expect(resp).to.deep.equal({
+            results: [{ id: 'A' }],
+            resultCount: 2,
+            pageCount: 2,
+            currentPage: 1,
+          });
+          return query.rows({
+            sql: 'SELECT * FROM `key` ORDER BY id',
+            paginate: {
+              page: 2,
+              resultsPerPage: 1,
+            },
+          });
+        })
+        .then(resp => {
+          expect(resp).to.deep.equal({
+            results: [{ id: 'B' }],
+            resultCount: 2,
+            pageCount: 2,
+            currentPage: 2,
+          });
+        }));
   });
 
   describe('build', () => {
@@ -129,6 +198,67 @@ describe('query', () => {
         insert('compoundKey', c),
       ])
     );
+
+    it('should have option to nest join', () =>
+      clearAllTables()
+        .then(() =>
+          Promise.all([
+            insert('key', { id: 'A' }),
+            insert('compoundKey', { a: 'A', b: 'B' }),
+          ])
+        )
+        .then(() =>
+          query
+            .build()
+            .select()
+            .from('`key`', 'k')
+            .join('compoundKey', 'ck', 'k.id = ck.a')
+            .run({ nestTables: true })
+            .then(rows => {
+              expect(rows).to.deep.equal([
+                {
+                  k: { id: 'A' },
+                  ck: { a: 'A', b: 'B' },
+                },
+              ]);
+            })
+        ));
+
+    it('should have option to paginate', () =>
+      clearAllTables()
+        .then(() =>
+          Promise.all([insert('key', { id: 'A' }), insert('key', { id: 'B' })])
+        )
+        .then(() =>
+          query.build().select().from('`key`').order('id').run({
+            paginate: {
+              page: 1,
+              resultsPerPage: 1,
+            },
+          })
+        )
+        .then(resp => {
+          expect(resp).to.deep.equal({
+            results: [{ id: 'A' }],
+            resultCount: 2,
+            pageCount: 2,
+            currentPage: 1,
+          });
+          return query.build().select().from('`key`').order('id').run({
+            paginate: {
+              page: 2,
+              resultsPerPage: 1,
+            },
+          });
+        })
+        .then(resp => {
+          expect(resp).to.deep.equal({
+            results: [{ id: 'B' }],
+            resultCount: 2,
+            pageCount: 2,
+            currentPage: 2,
+          });
+        }));
 
     it('should have cursor option', () =>
       query
@@ -485,7 +615,7 @@ describe('query', () => {
           chai.assert.deepEqual(resp, [c]);
         }));
 
-    it('should be able to pass query options through "run" command', () =>
+    it('should option to return resultCount', () =>
       query
         .build()
         .select()

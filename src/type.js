@@ -3,9 +3,7 @@
 import type Promise from 'bluebird';
 
 export type SqlWrapType = 'mysql';
-
 export type SqlWrapOrderByDirection = 'ASC' | 'DESC';
-
 export type SqlWrapSerializeField = (fieldToDB: mixed) => mixed;
 export type SqlWrapDeserializeField = (fieldFromDB: mixed) => mixed;
 
@@ -34,6 +32,7 @@ export type SqlWrapQueryWriteOutput = {
 };
 export type SqlWrapQuery = ({
   sql: string,
+  nestTables?: boolean,
   values?: Array<mixed>,
 }) => Promise<Array<Object> | SqlWrapQueryWriteOutput>;
 
@@ -114,6 +113,7 @@ export type SqlWrapQueryBuilder = {|
     tableLabel: string,
     joinWhere: string
   ) => SqlWrapQueryBuilder,
+  order: (field: string, direction?: boolean) => SqlWrapQueryBuilder,
   run: (fig?: {|
     resultCount?: boolean,
     nestTables?: boolean,

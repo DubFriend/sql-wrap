@@ -246,18 +246,48 @@ module.exports = ({
       values,
     } = resolveRowsConfig(textOrConfig, maybeValues);
 
-    if (typeof resultCount === 'boolean') {
-      const addCalcFoundRows = sql => {
-        const pieces = sql.split(' ');
-        pieces.splice(1, 0, 'SQL_CALC_FOUND_ROWS');
-        return pieces.join(' ');
-      };
+    const addCalcFoundRows = sql => {
+      const pieces = sql.split(' ');
+      pieces.splice(1, 0, 'SQL_CALC_FOUND_ROWS');
+      return pieces.join(' ');
+    };
+
+    if (typeof paginate === 'object') {
+      const { page = 1, resultsPerPage = 10 } = paginate;
+      return getConnection().then(conn => {
+        return conn
+          .query({
+            sql: `${stripLimit(addCalcFoundRows(sql))} LIMIT ${resultsPerPage +
+              (page > 1 ? ` OFFSET ${(page - 1) * resultsPerPage}` : '')}`,
+            nestTables,
+            values,
+          })
+          .then(rows =>
+            conn
+              .query({ sql: 'SELECT FOUND_ROWS() AS count' })
+              .then(([{ count }]) => {
+                connectionDone(conn);
+                const resp: any = {
+                  resultCount: Number(count),
+                  results: rows,
+                  pageCount: Math.ceil(Number(count) / resultsPerPage),
+                  currentPage: page,
+                };
+                return resp;
+              })
+              .catch(err => {
+                connectionDone(conn);
+                return Promise.reject(err);
+              })
+          );
+      });
+    } else if (resultCount === true) {
       return getConnection().then(conn => {
         return conn
           .query({ sql: addCalcFoundRows(sql), nestTables, values })
           .then(rows =>
             conn
-              .query({ sql: 'SELECT FOUND_ROWS() AS count', values: [] })
+              .query({ sql: 'SELECT FOUND_ROWS() AS count' })
               .then(([{ count }]) => {
                 connectionDone(conn);
                 const resp: any = {
@@ -282,7 +312,7 @@ module.exports = ({
     maybeValues?: SqlWrapInputValues
   ): Promise<SqlWrapQueryWriteOutput | Object> => {
     const config = resolveRowsConfig(textOrConfig, maybeValues);
-    config.sql = stripLimit(config.sql) + ' LIMIT 1';
+    config.sql = `${stripLimit(config.sql)} LIMIT 1`;
     return self
       .rows(textOrConfig, maybeValues)
       .then(resp => (Array.isArray(resp) ? _.first(resp) : resp));

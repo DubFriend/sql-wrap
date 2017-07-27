@@ -10,10 +10,18 @@ const rawPool = require('mysql').createPool({
 });
 
 exports.pool = {
-  query: ({ sql, values }: { sql: string, values?: Array<mixed> }) =>
+  query: ({
+    sql,
+    nestTables,
+    values,
+  }: {
+    sql: string,
+    nestTables?: boolean,
+    values?: Array<mixed>,
+  }) =>
     new Promise((resolve, reject) => {
       rawPool.query(
-        { sql, values },
+        { sql, nestTables, values },
         (err, results) => (err ? reject(err) : resolve(results))
       );
     }),
@@ -46,27 +54,6 @@ exports.pool = {
           reject(new Error('connection not found'));
         }
       });
-      // rawPool.getConnection(
-      //   (err, connection) =>
-      //     err
-      //       ? reject(err)
-      //       : resolve({
-      //           // connection
-      //           query: ({
-      //             sql,
-      //             values,
-      //           }: {
-      //             sql: string,
-      //             values?: Array<mixed>,
-      //           }) =>
-      //             new Promise((resolve, reject) => {
-      //               connection.query(
-      //                 { sql, values },
-      //                 (err, results) => (err ? reject(err) : resolve(results))
-      //               );
-      //             }),
-      //         })
-      // );
     }),
 };
 
