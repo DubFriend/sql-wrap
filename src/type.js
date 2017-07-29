@@ -1,5 +1,6 @@
 // @flow
 
+import type { Readable } from 'stream';
 import type Promise from 'bluebird';
 
 export type SqlWrapType = 'mysql';
@@ -36,13 +37,21 @@ export type SqlWrapQuery = ({
   values?: Array<mixed>,
 }) => Promise<Array<Object> | SqlWrapQueryWriteOutput>;
 
+export type SqlWrapStream = ({
+  sql: string,
+  nestTables?: boolean,
+  values?: Array<mixed>,
+}) => Readable;
+
 export type SqlWrapConnection = {
   query: SqlWrapQuery,
+  stream: SqlWrapStream,
   release: () => void,
 };
 
 export type SqlWrapConnectionPool = {
   query: SqlWrapQuery,
+  stream: SqlWrapStream,
   getConnection: () => Promise<SqlWrapConnection>,
 };
 

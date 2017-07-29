@@ -20,6 +20,8 @@ import type {
   SqlWrapQueryBuilder,
 } from './type';
 
+import type { Readable } from 'stream';
+
 import Promise from 'bluebird';
 import _ from 'lodash';
 import squelUnflavored from 'squel';
@@ -228,6 +230,17 @@ module.exports = ({
     row: Object
   ): string => encodeCursor(mapOrderBy(orderByRaw), row);
 
+  const addCalcFoundRows = sql => {
+    const pieces = sql.split(' ');
+    pieces.splice(1, 0, 'SQL_CALC_FOUND_ROWS');
+    return pieces.join(' ');
+  };
+
+  self.stream = (
+    textOrConfig: string | SqlWrapQueryConfig,
+    maybeValues?: SqlWrapInputValues
+  ): Readable => driver.stream(resolveRowsConfig(textOrConfig, maybeValues));
+
   self.rows = (
     textOrConfig: string | SqlWrapQueryConfig,
     maybeValues?: SqlWrapInputValues
@@ -246,12 +259,6 @@ module.exports = ({
       resultCount,
       values,
     } = resolveRowsConfig(textOrConfig, maybeValues);
-
-    const addCalcFoundRows = sql => {
-      const pieces = sql.split(' ');
-      pieces.splice(1, 0, 'SQL_CALC_FOUND_ROWS');
-      return pieces.join(' ');
-    };
 
     if (typeof paginate === 'object') {
       const { page = 1, resultsPerPage = 10 } = paginate;

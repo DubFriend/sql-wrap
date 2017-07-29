@@ -169,6 +169,23 @@ describe('query', () => {
         }));
   });
 
+  describe('stream', () => {
+    it('should stream found rows', done => {
+      insert('key', { id: 'A' }).then(() => {
+        const expectedStream = [{ id: 'A' }];
+        const s = query.stream('SELECT * FROM `key`');
+        s.on('error', done);
+        s.on('data', row => {
+          expect(row).to.deep.equal(expectedStream.shift());
+        });
+        s.on('end', () => {
+          expect(expectedStream).to.have.lengthOf(0);
+          done();
+        });
+      });
+    });
+  });
+
   describe('build', () => {
     const rowsToEdges = (rows: Array<Object>, fields: *) =>
       _.map(rows, r => ({
