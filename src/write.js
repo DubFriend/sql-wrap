@@ -125,5 +125,32 @@ module.exports = ({
     }
   };
 
+  self.replace = (
+    table: string,
+    rowOrRows: Array<Object> | Object
+  ): Promise<SqlWrapQueryWriteOutput> => {
+    const rows = Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows];
+
+    if (rows.length) {
+      const response: any = query
+        .build()
+        .replace()
+        .into(wrapUptick(table))
+        .setFieldsRows(_.map(rows, r => _.mapKeys(r, (v, k) => wrapUptick(k))))
+        .run();
+      return response;
+    } else {
+      return Promise.resolve({
+        fieldCount: 0,
+        affectedRows: 0,
+        insertId: 0,
+        serverStatus: 0,
+        warningCount: 0,
+        message: '',
+        changedRows: 0,
+      });
+    }
+  };
+
   return self;
 };

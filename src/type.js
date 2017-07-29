@@ -88,6 +88,7 @@ export type SqlWrapSelectConfig = {
   table: string,
   fields?: Array<string>,
   paginate?: SqlWrapPagination,
+  nestTables?: boolean,
   where?: Object,
 };
 
@@ -102,6 +103,7 @@ export type SqlWrapQueryBuilder = {|
   update: () => SqlWrapQueryBuilder,
   delete: () => SqlWrapQueryBuilder,
   insert: () => SqlWrapQueryBuilder,
+  replace: () => SqlWrapQueryBuilder,
   into: (table: string) => SqlWrapQueryBuilder,
   table: (table: string) => SqlWrapQueryBuilder,
   set: (name: string, value: mixed, options?: Object) => SqlWrapQueryBuilder,
@@ -142,6 +144,9 @@ export type SqlWrapQueryBuilder = {|
     paginate?: SqlWrapPagination,
     cursor?: SqlWrapCursor,
   |}) => Promise<Array<Object> | SqlWrapQueryWriteOutput>,
+  stream: (fig?: {
+    nestTables?: boolean,
+  }) => Readable,
   one: (fig?: {|
     resultCount?: boolean,
     nestTables?: boolean,

@@ -127,4 +127,35 @@ describe('write.unit', () => {
         expect(rows).to.have.lengthOf(0);
       }));
   });
+
+  describe('replace', () => {
+    it('should insert row', () =>
+      write
+        .replace('defaultValue', { id: 'A', default: 'foo' })
+        .then(resp => {
+          expect(JSON.parse(JSON.stringify(resp))).to.deep.equal({
+            fieldCount: 0,
+            affectedRows: 1,
+            insertId: 0,
+            serverStatus: 2,
+            warningCount: 0,
+            message: '',
+            protocol41: true,
+            changedRows: 0,
+          });
+          return all('defaultValue');
+        })
+        .then(rows => {
+          expect(rows).to.deep.equal([{ id: 'A', default: 'foo' }]);
+        }));
+
+    it('should replace row with same unique key', () =>
+      write
+        .replace('defaultValue', { id: 'A', default: 'foo' })
+        .then(() => write.replace('defaultValue', { id: 'A', default: 'bar' }))
+        .then(() => all('defaultValue'))
+        .then(rows => {
+          expect(rows).to.deep.equal([{ id: 'A', default: 'bar' }]);
+        }));
+  });
 });

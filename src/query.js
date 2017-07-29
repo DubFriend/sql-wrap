@@ -85,7 +85,7 @@ module.exports = ({
   const squel = squelUnflavored.useFlavour(sqlType);
   const self = {};
 
-  const getConnection = (): Promise<SqlWrapConnection> => {
+  self.getConnection = (): Promise<SqlWrapConnection> => {
     const connectionPromise: any =
       typeof driver.getConnection === 'function'
         ? driver.getConnection()
@@ -262,7 +262,7 @@ module.exports = ({
 
     if (typeof paginate === 'object') {
       const { page = 1, resultsPerPage = 10 } = paginate;
-      return getConnection().then(conn => {
+      return self.getConnection().then(conn => {
         return conn
           .query({
             sql: `${stripLimit(addCalcFoundRows(sql))} LIMIT ${resultsPerPage +
@@ -290,7 +290,7 @@ module.exports = ({
           );
       });
     } else if (resultCount === true) {
-      return getConnection().then(conn => {
+      return self.getConnection().then(conn => {
         return conn
           .query({ sql: addCalcFoundRows(sql), nestTables, values })
           .then(rows =>
@@ -318,12 +318,13 @@ module.exports = ({
   self.row = (
     textOrConfig: string | SqlWrapQueryConfig,
     maybeValues?: SqlWrapInputValues
-  ): Promise<SqlWrapQueryWriteOutput | Object> => {
+  ): Promise<SqlWrapQueryWriteOutput | Object | null> => {
     const config = resolveRowsConfig(textOrConfig, maybeValues);
     config.sql = `${stripLimit(config.sql)} LIMIT 1`;
     return self
       .rows(textOrConfig, maybeValues)
-      .then(resp => (Array.isArray(resp) ? _.first(resp) : resp));
+      .then(resp => (Array.isArray(resp) ? _.first(resp) : resp))
+      .then(resp => (resp === undefined ? null : resp));
   };
 
   self.build = (): SqlWrapQueryBuilder => {
@@ -337,6 +338,11 @@ module.exports = ({
           const { text, values } = s.toParam();
           return self.rows(_.extend({ sql: text, values }, fig));
         }
+      };
+
+      s.stream = (fig = {}) => {
+        const { text, values } = s.toParam();
+        return self.stream(_.extend({ sql: text, values }, fig));
       };
 
       s.one = (fig = {}) => {
@@ -359,6 +365,10 @@ module.exports = ({
       update: wrap('update'),
       delete: wrap('delete'),
       insert: wrap('insert'),
+      replace: wrap('replace'),
+      case: wrap('case'),
+      expr: wrap('expr'),
+      cls: wrap('cls'),
     };
 
     return buildSelf;

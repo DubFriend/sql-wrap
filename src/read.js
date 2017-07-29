@@ -13,6 +13,8 @@ import type {
   SqlWrapSelectStreamConfig,
 } from './type';
 
+import type { Readable } from 'stream';
+
 import Promise from 'bluebird';
 import _ from 'lodash';
 import createQuery from './query';
@@ -57,7 +59,7 @@ module.exports = ({
   ): Promise<
     Array<Object> | { results: Array<Object>, resultCount: number }
   > => {
-    const { table, fields, paginate, where } = resolveConfig(
+    const { table, fields, nestTables, paginate, where } = resolveConfig(
       tableOrConfig,
       maybeWhere
     );
@@ -72,19 +74,41 @@ module.exports = ({
         q.field(f);
       });
     }
-    const response: any = q.run({ paginate });
+    const response: any = q.run({ paginate, nestTables });
     return response;
+  };
+
+  self.stream = (
+    tableOrConfig: string | SqlWrapSelectConfig,
+    maybeWhere?: Object
+  ): Readable => {
+    const { table, fields, nestTables, where } = resolveConfig(
+      tableOrConfig,
+      maybeWhere
+    );
+    const q = query.build().select().from(wrapUptick(table));
+    if (where) {
+      _.each(where, (v, k) => {
+        q.where(`${wrapUptick(k)} = ?`, v);
+      });
+    }
+    if (fields) {
+      _.each(fields, f => {
+        q.field(f);
+      });
+    }
+    return q.stream({ nestTables });
   };
 
   self.selectOne = (
     tableOrConfig: string | SqlWrapSelectConfig,
     maybeWhere?: Object
-  ): Promise<Object> =>
+  ): Promise<Object | null> =>
     self.select(tableOrConfig, maybeWhere).then(resp => {
       const response: any = Array.isArray(resp)
         ? _.first(resp)
         : _.first(resp.results);
-      return response;
+      return response || null;
     });
 
   return self;

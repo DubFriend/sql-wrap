@@ -50,6 +50,21 @@ describe('read.unit', () => {
         }));
   });
 
+  describe('stream', () => {
+    it('should return readable stream or results', done => {
+      const s = read.stream({ table: 'compoundKey' });
+      const expectedStream = [{ a: 'A', b: 'B' }];
+      s.on('error', done);
+      s.on('data', row => {
+        expect(row).to.deep.equal(expectedStream.shift());
+      });
+      s.on('end', () => {
+        expect(expectedStream).to.have.lengthOf(0);
+        done();
+      });
+    });
+  });
+
   describe('selectOne', () => {
     it('should get a single row', () =>
       read.selectOne('key', { id: 'A' }).then(row => {
