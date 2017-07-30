@@ -195,7 +195,9 @@ module.exports = ({
           }
           return r;
         } else {
-          return Promise.reject(new Error("this shouldn't happen"));
+          return Promise.reject(
+            new TypeError('response is missing "results" and/or "resultCount"')
+          );
         }
       })
       .then(resp => ({

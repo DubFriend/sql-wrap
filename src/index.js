@@ -40,6 +40,14 @@ const createSqlWrap = ({
       .getConnection()
       .then(conn => createSqlWrap({ driver: conn, sqlType }));
 
+  self.release = (): void => {
+    if (driver.release && typeof driver.release === 'function') {
+      driver.release();
+    } else {
+      throw new TypeError('release is not a function');
+    }
+  };
+
   self.query = (textOrConfig: *, values?: *): * =>
     query.rows(textOrConfig, values);
 

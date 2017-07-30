@@ -34,7 +34,7 @@ module.exports = ({
   self.insert = (
     table: string,
     rowOrRows: Array<Object> | Object
-  ): Promise<Array<SqlWrapQueryWriteOutput>> => {
+  ): Promise<Array<SqlWrapQueryWriteOutput> | SqlWrapQueryWriteOutput> => {
     const rows = Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows];
 
     if (rows.length) {
@@ -63,19 +63,9 @@ module.exports = ({
               })
             );
         })
-      );
+      ).then(resp => (Array.isArray(rowOrRows) ? resp : _.first(resp)));
     } else {
-      return Promise.resolve([
-        {
-          fieldCount: 0,
-          affectedRows: 0,
-          insertId: 0,
-          serverStatus: 0,
-          warningCount: 0,
-          message: '',
-          changedRows: 0,
-        },
-      ]);
+      return Promise.resolve([]);
     }
   };
 
@@ -120,7 +110,7 @@ module.exports = ({
   self.save = (
     table: string,
     rowOrRows: Array<Object> | Object
-  ): Promise<Array<SqlWrapQueryWriteOutput>> => {
+  ): Promise<Array<SqlWrapQueryWriteOutput> | SqlWrapQueryWriteOutput> => {
     const rows = Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows];
 
     if (rows.length) {
@@ -153,26 +143,16 @@ module.exports = ({
             })
           );
         })
-      );
+      ).then(resp => (Array.isArray(rowOrRows) ? resp : _.first(resp)));
     } else {
-      return Promise.resolve([
-        {
-          fieldCount: 0,
-          affectedRows: 0,
-          insertId: 0,
-          serverStatus: 0,
-          warningCount: 0,
-          message: '',
-          changedRows: 0,
-        },
-      ]);
+      return Promise.resolve([]);
     }
   };
 
   self.replace = (
     table: string,
     rowOrRows: Array<Object> | Object
-  ): Promise<Array<SqlWrapQueryWriteOutput>> => {
+  ): Promise<Array<SqlWrapQueryWriteOutput> | SqlWrapQueryWriteOutput> => {
     const rows = Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows];
 
     if (rows.length) {
@@ -201,19 +181,9 @@ module.exports = ({
               })
             );
         })
-      );
+      ).then(resp => (Array.isArray(rowOrRows) ? resp : _.first(resp)));
     } else {
-      return Promise.resolve([
-        {
-          fieldCount: 0,
-          affectedRows: 0,
-          insertId: 0,
-          serverStatus: 0,
-          warningCount: 0,
-          message: '',
-          changedRows: 0,
-        },
-      ]);
+      return Promise.resolve([]);
     }
   };
 

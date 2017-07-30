@@ -19,19 +19,17 @@ describe('write.unit', () => {
       write
         .insert('key', { id: 'A' })
         .then(resp => {
-          expect(JSON.parse(JSON.stringify(resp))).to.deep.equal([
-            {
-              bulkWriteKey: 'id',
-              fieldCount: 0,
-              affectedRows: 1,
-              insertId: 0,
-              serverStatus: 2,
-              warningCount: 0,
-              message: '',
-              protocol41: true,
-              changedRows: 0,
-            },
-          ]);
+          expect(JSON.parse(JSON.stringify(resp))).to.deep.equal({
+            bulkWriteKey: 'id',
+            fieldCount: 0,
+            affectedRows: 1,
+            insertId: 0,
+            serverStatus: 2,
+            warningCount: 0,
+            message: '',
+            protocol41: true,
+            changedRows: 0,
+          });
           return all('key');
         })
         .then(rows => {
@@ -95,19 +93,17 @@ describe('write.unit', () => {
       write
         .save('compoundKey', { b: 'B', a: 'A' })
         .then(resp => {
-          expect(JSON.parse(JSON.stringify(resp))).to.deep.equal([
-            {
-              bulkWriteKey: 'a:b',
-              fieldCount: 0,
-              affectedRows: 1,
-              insertId: 0,
-              serverStatus: 2,
-              warningCount: 0,
-              message: '',
-              protocol41: true,
-              changedRows: 0,
-            },
-          ]);
+          expect(JSON.parse(JSON.stringify(resp))).to.deep.equal({
+            bulkWriteKey: 'a:b',
+            fieldCount: 0,
+            affectedRows: 1,
+            insertId: 0,
+            serverStatus: 2,
+            warningCount: 0,
+            message: '',
+            protocol41: true,
+            changedRows: 0,
+          });
 
           return all('compoundKey');
         })
@@ -161,23 +157,21 @@ describe('write.unit', () => {
   });
 
   describe('replace', () => {
-    it('should insert row', () =>
+    it('should insert row if does not exist', () =>
       write
         .replace('defaultValue', { id: 'A', default: 'foo' })
         .then(resp => {
-          expect(JSON.parse(JSON.stringify(resp))).to.deep.equal([
-            {
-              bulkWriteKey: 'default:id',
-              fieldCount: 0,
-              affectedRows: 1,
-              insertId: 0,
-              serverStatus: 2,
-              warningCount: 0,
-              message: '',
-              protocol41: true,
-              changedRows: 0,
-            },
-          ]);
+          expect(JSON.parse(JSON.stringify(resp))).to.deep.equal({
+            bulkWriteKey: 'default:id',
+            fieldCount: 0,
+            affectedRows: 1,
+            insertId: 0,
+            serverStatus: 2,
+            warningCount: 0,
+            message: '',
+            protocol41: true,
+            changedRows: 0,
+          });
           return all('defaultValue');
         })
         .then(rows => {
