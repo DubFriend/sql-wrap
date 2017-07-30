@@ -19,21 +19,29 @@ describe('write.unit', () => {
       write
         .insert('key', { id: 'A' })
         .then(resp => {
-          expect(JSON.parse(JSON.stringify(resp))).to.deep.equal({
-            fieldCount: 0,
-            affectedRows: 1,
-            insertId: 0,
-            serverStatus: 2,
-            warningCount: 0,
-            message: '',
-            protocol41: true,
-            changedRows: 0,
-          });
+          expect(JSON.parse(JSON.stringify(resp))).to.deep.equal([
+            {
+              bulkWriteKey: 'id',
+              fieldCount: 0,
+              affectedRows: 1,
+              insertId: 0,
+              serverStatus: 2,
+              warningCount: 0,
+              message: '',
+              protocol41: true,
+              changedRows: 0,
+            },
+          ]);
           return all('key');
         })
         .then(rows => {
           expect(rows).to.deep.equal([{ id: 'A' }]);
         }));
+
+    it('should handle empty array', () =>
+      write.insert('key', []).then(() => all('key')).then(rows => {
+        expect(rows).to.have.lengthOf(0);
+      }));
 
     it('should bulk insert', () =>
       write
@@ -43,10 +51,17 @@ describe('write.unit', () => {
           expect(rows).to.have.same.deep.members([{ id: 'A' }, { id: 'B' }]);
         }));
 
-    it('should handle empty array', () =>
-      write.insert('key', []).then(() => all('key')).then(rows => {
-        expect(rows).to.have.lengthOf(0);
-      }));
+    it('should bulk insert with different length rows', () =>
+      write
+        .insert('defaultValue', [{ id: 'A' }, { id: 'B', default: 'bar' }])
+        .then(() => all('defaultValue'))
+        .then(rows => {
+          expect(rows).to.have.lengthOf(2);
+          expect(rows).to.have.same.deep.members([
+            { id: 'A', default: 'DEFAULT' },
+            { id: 'B', default: 'bar' },
+          ]);
+        }));
   });
 
   describe('update', () => {
@@ -78,23 +93,26 @@ describe('write.unit', () => {
   describe('save', () => {
     it('should insert row if does not exist', () =>
       write
-        .save('key', { id: 'A' })
+        .save('compoundKey', { b: 'B', a: 'A' })
         .then(resp => {
-          expect(JSON.parse(JSON.stringify(resp))).to.deep.equal({
-            fieldCount: 0,
-            affectedRows: 1,
-            insertId: 0,
-            serverStatus: 2,
-            warningCount: 0,
-            message: '',
-            protocol41: true,
-            changedRows: 0,
-          });
+          expect(JSON.parse(JSON.stringify(resp))).to.deep.equal([
+            {
+              bulkWriteKey: 'a:b',
+              fieldCount: 0,
+              affectedRows: 1,
+              insertId: 0,
+              serverStatus: 2,
+              warningCount: 0,
+              message: '',
+              protocol41: true,
+              changedRows: 0,
+            },
+          ]);
 
-          return all('key');
+          return all('compoundKey');
         })
         .then(rows => {
-          expect(rows).to.deep.equal([{ id: 'A' }]);
+          expect(rows).to.deep.equal([{ a: 'A', b: 'B' }]);
         }));
 
     it('should update row if exists by unique constraint', () =>
@@ -104,6 +122,11 @@ describe('write.unit', () => {
         .then(rows => {
           expect(rows).to.deep.equal([{ id: 'A', default: 'bar' }]);
         }));
+
+    it('should handle empty array', () =>
+      write.save('key', []).then(() => all('key')).then(rows => {
+        expect(rows).to.have.lengthOf(0);
+      }));
 
     it('should bulk save', () =>
       insert('defaultValue', { id: 'A', default: 'foo' })
@@ -122,10 +145,19 @@ describe('write.unit', () => {
           ]);
         }));
 
-    it('should handle empty array', () =>
-      write.save('key', []).then(() => all('key')).then(rows => {
-        expect(rows).to.have.lengthOf(0);
-      }));
+    it('should bulk save with different length rows', () =>
+      insert('defaultValue', { id: 'A', default: 'foo' })
+        .then(() =>
+          write.save('defaultValue', [{ id: 'A' }, { id: 'B', default: 'bar' }])
+        )
+        .then(() => all('defaultValue'))
+        .then(rows => {
+          expect(rows).to.have.lengthOf(2);
+          expect(rows).to.have.same.deep.members([
+            { id: 'A', default: 'foo' },
+            { id: 'B', default: 'bar' },
+          ]);
+        }));
   });
 
   describe('replace', () => {
@@ -133,16 +165,19 @@ describe('write.unit', () => {
       write
         .replace('defaultValue', { id: 'A', default: 'foo' })
         .then(resp => {
-          expect(JSON.parse(JSON.stringify(resp))).to.deep.equal({
-            fieldCount: 0,
-            affectedRows: 1,
-            insertId: 0,
-            serverStatus: 2,
-            warningCount: 0,
-            message: '',
-            protocol41: true,
-            changedRows: 0,
-          });
+          expect(JSON.parse(JSON.stringify(resp))).to.deep.equal([
+            {
+              bulkWriteKey: 'default:id',
+              fieldCount: 0,
+              affectedRows: 1,
+              insertId: 0,
+              serverStatus: 2,
+              warningCount: 0,
+              message: '',
+              protocol41: true,
+              changedRows: 0,
+            },
+          ]);
           return all('defaultValue');
         })
         .then(rows => {
@@ -156,6 +191,45 @@ describe('write.unit', () => {
         .then(() => all('defaultValue'))
         .then(rows => {
           expect(rows).to.deep.equal([{ id: 'A', default: 'bar' }]);
+        }));
+
+    it('should handle empty array', () =>
+      write.replace('key', []).then(() => all('key')).then(rows => {
+        expect(rows).to.have.lengthOf(0);
+      }));
+
+    it('should bulk replace', () =>
+      insert('defaultValue', { id: 'A', default: 'foo' })
+        .then(() =>
+          write.replace('defaultValue', [
+            { id: 'A', default: 'bar' },
+            { id: 'B', default: 'baz' },
+          ])
+        )
+        .then(() => all('defaultValue'))
+        .then(rows => {
+          expect(rows).to.have.lengthOf(2);
+          expect(rows).to.have.same.deep.members([
+            { id: 'A', default: 'bar' },
+            { id: 'B', default: 'baz' },
+          ]);
+        }));
+
+    it('should bulk save with different length rows', () =>
+      insert('defaultValue', { id: 'A', default: 'foo' })
+        .then(() =>
+          write.replace('defaultValue', [
+            { id: 'A' },
+            { id: 'B', default: 'bar' },
+          ])
+        )
+        .then(() => all('defaultValue'))
+        .then(rows => {
+          expect(rows).to.have.lengthOf(2);
+          expect(rows).to.have.same.deep.members([
+            { id: 'A', default: 'DEFAULT' },
+            { id: 'B', default: 'bar' },
+          ]);
         }));
   });
 });

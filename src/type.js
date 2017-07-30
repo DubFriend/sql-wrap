@@ -23,6 +23,7 @@ export type SqlWrapMappedOrderByObject = {
 };
 
 export type SqlWrapQueryWriteOutput = {
+  bulkWriteKey?: string,
   fieldCount: number,
   affectedRows: number,
   insertId: number,

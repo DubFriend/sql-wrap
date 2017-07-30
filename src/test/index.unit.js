@@ -128,7 +128,7 @@ describe('index.unit', () => {
       index
         .build()
         .insert()
-        .into('`key`')
+        .into('`key` ')
         .setFields({ id: 'a' })
         .run()
         .then(() => all('key'))
