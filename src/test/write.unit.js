@@ -60,6 +60,14 @@ describe('write.unit', () => {
             { id: 'B', default: 'bar' },
           ]);
         }));
+
+    it('should handle Date object as insert value', () =>
+      write
+        .insert('timestamp', { id: new Date(2000) })
+        .then(() => all('timestamp'))
+        .then(rows => {
+          expect(rows).to.deep.equal([{ id: new Date(2000) }]);
+        }));
   });
 
   describe('update', () => {

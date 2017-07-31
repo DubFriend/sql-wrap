@@ -83,6 +83,8 @@ module.exports = ({
   sqlType: SqlWrapType,
 }) => {
   const squel = squelUnflavored.useFlavour(sqlType);
+  squel.registerValueHandler(Date, d => d);
+
   const self = {};
 
   self.getConnection = (): Promise<SqlWrapConnection> => {
