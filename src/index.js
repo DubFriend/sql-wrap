@@ -12,7 +12,11 @@ import type {
   SqlWrapSelectStreamConfig,
   SqlWrapType,
   SqlWrapQueryWriteOutput,
+  SqlWrapQueryBuilder,
+  SqlWrapMappedOrderByObject,
 } from './type';
+
+import type { Readable } from 'stream';
 
 import squel from 'squel';
 import Promise from 'bluebird';
@@ -21,6 +25,75 @@ import sqlString from 'sqlstring';
 import createQuery from './query';
 import createRead from './read';
 import createWrite from './write';
+
+export type SqlWrap = {
+  connection: () => Promise<*>,
+  release: () => void,
+  query: (
+    textOrConfig: string | SqlWrapQueryConfig,
+    maybeValues?: SqlWrapInputValues
+  ) => Promise<
+    | SqlWrapQueryWriteOutput
+    | Array<Object>
+    | {
+      results: Array<Object>,
+      resultCount: number,
+    }
+  >,
+  one: (
+    textOrConfig: string | SqlWrapQueryConfig,
+    maybeValues?: SqlWrapInputValues
+  ) => Promise<SqlWrapQueryWriteOutput | Object | null>,
+  select: (
+    tableOrConfig: string | SqlWrapSelectConfig,
+    maybeWhere?: Object
+  ) => Promise<Array<Object> | { results: Array<Object>, resultCount: number }>,
+  selectOne: (
+    tableOrConfig: string | SqlWrapSelectConfig,
+    maybeWhere?: Object
+  ) => Promise<Object | null>,
+  stream: (
+    textOrConfig: string | SqlWrapQueryConfig,
+    maybeValues?: SqlWrapInputValues
+  ) => Readable,
+  streamTable: (
+    tableOrConfig: string | SqlWrapSelectConfig,
+    maybeWhere?: Object
+  ) => Readable,
+  queryStream: (
+    textOrConfig: string | SqlWrapQueryConfig,
+    maybeValues?: SqlWrapInputValues
+  ) => Promise<Readable>,
+  selectStream: (
+    tableOrConfig: string | SqlWrapSelectConfig,
+    maybeWhere?: Object
+  ) => Promise<Readable>,
+  insert: (
+    table: string,
+    rowOrRows: Array<Object> | Object
+  ) => Promise<Array<SqlWrapQueryWriteOutput> | SqlWrapQueryWriteOutput>,
+  update: (
+    table: string,
+    updates: Object,
+    where?: Object
+  ) => Promise<SqlWrapQueryWriteOutput>,
+  delete: (table: string, where?: Object) => Promise<SqlWrapQueryWriteOutput>,
+  save: (
+    table: string,
+    rowOrRows: Array<Object> | Object
+  ) => Promise<Array<SqlWrapQueryWriteOutput> | SqlWrapQueryWriteOutput>,
+  replace: (
+    table: string,
+    rowOrRows: Array<Object> | Object
+  ) => Promise<Array<SqlWrapQueryWriteOutput> | SqlWrapQueryWriteOutput>,
+  build: () => SqlWrapQueryBuilder,
+  escape: () => (data: mixed) => mixed,
+  escapeId: () => (data: string) => string,
+  encodeCursor: (
+    orderBy: Array<SqlWrapMappedOrderByObject>,
+    row: Object
+  ) => string,
+};
 
 const createSqlWrap = ({
   driver,
@@ -74,14 +147,14 @@ const createSqlWrap = ({
 
   self.insert = (table: *, rowOrRows: *): * => write.insert(table, rowOrRows);
 
-  self.replace = (table: *, rowOrRows: *): * => write.replace(table, rowOrRows);
-
-  self.save = (table: *, rowOrRows: *) => write.save(table, rowOrRows);
-
   self.update = (table: *, rowOrRows: *, where?: *): * =>
     write.update(table, rowOrRows, where);
 
   self.delete = (table: *, where?: *): * => write.delete(table, where);
+
+  self.save = (table: *, rowOrRows: *) => write.save(table, rowOrRows);
+
+  self.replace = (table: *, rowOrRows: *): * => write.replace(table, rowOrRows);
 
   self.build = (): * => query.build();
 

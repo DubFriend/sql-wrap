@@ -25,7 +25,7 @@ gulp.task('flow-copy-source', ['clean-flow'], () =>
   flowCopySource(['src'], 'lib')
 );
 
-gulp.task('test', ['transpile'], () =>
+gulp.task('test', ['transpile', 'flow-copy-source'], () =>
   gulp
     .src(['lib/**/test/**/*.unit.js', 'lib/**/test/**/*.e2e.js'])
     .pipe(
