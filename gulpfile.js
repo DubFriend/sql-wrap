@@ -1,8 +1,16 @@
+const Promise = require('bluebird');
 const { argv } = require('yargs');
 const gulp = require('gulp');
 const mocha = require('gulp-mocha');
 const babel = require('gulp-babel');
-gulp.task('transpile', () =>
+const fs = Promise.promisifyAll(require('fs'));
+const del = require('del');
+const flowCopySource = require('flow-copy-source');
+
+gulp.task('clean-js', () => del('lib/**/*.js'));
+gulp.task('clean-flow', () => del('lib/**/*.flow'));
+
+gulp.task('transpile', ['clean-js'], () =>
   gulp
     .src('src/**/*.js')
     .pipe(
@@ -11,6 +19,10 @@ gulp.task('transpile', () =>
       })
     )
     .pipe(gulp.dest('lib'))
+);
+
+gulp.task('flow-copy-source', ['clean-flow'], () =>
+  flowCopySource(['src'], 'lib')
 );
 
 gulp.task('test', ['transpile'], () =>
@@ -31,3 +43,5 @@ gulp.task('test', ['transpile'], () =>
       process.exit();
     })
 );
+
+gulp.task('build', ['transpile', 'flow-copy-source']);
