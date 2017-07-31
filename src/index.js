@@ -88,6 +88,9 @@ const createSqlWrap = ({
   self.escape = (data: mixed): mixed => sqlString.escape(data);
   self.escapeId = (data: string): string => sqlString.escapeId(data);
 
+  self.encodeCursor = (orderBy: *, row: *): * =>
+    query.encodeCursor(orderBy, row);
+
   return self;
 };
 
