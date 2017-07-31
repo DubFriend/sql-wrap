@@ -31,6 +31,19 @@ module.exports = ({
 
   const query = createQuery({ driver, sqlType });
 
+  const prepareWriteData = d =>
+    Array.isArray(d)
+      ? _.map(d, prepareWriteData)
+      : _.chain(d)
+          .omitBy(_.isUndefined)
+          .mapKeys((v, k) => wrapUptick(k))
+          .value();
+
+  // const prepareWriteRows = rows =>
+  //   _.chain(rows)
+  //     .omitBy(_.isUndefined)
+  //     .map(r => _.mapKeys(r, (v, k) => wrapUptick(k)));
+
   self.insert = (
     table: string,
     rowOrRows: Array<Object> | Object
@@ -53,9 +66,7 @@ module.exports = ({
             .build()
             .insert()
             .into(wrapUptick(table))
-            .setFieldsRows(
-              _.map(rows, r => _.mapKeys(r, (v, k) => wrapUptick(k)))
-            )
+            .setFieldsRows(prepareWriteData(rows))
             .run()
             .then((resp: any) =>
               _.extend(resp, {
@@ -78,7 +89,7 @@ module.exports = ({
       .build()
       .update()
       .table(wrapUptick(table))
-      .setFields(_.mapKeys(updates, (v, k) => wrapUptick(k)));
+      .setFields(prepareWriteData(updates));
 
     if (where) {
       _.each(where, (v, k) => {
@@ -129,9 +140,7 @@ module.exports = ({
             .build()
             .insert()
             .into(wrapUptick(table))
-            .setFieldsRows(
-              _.map(rows, r => _.mapKeys(r, (v, k) => wrapUptick(k)))
-            );
+            .setFieldsRows(prepareWriteData(rows));
 
           _.each(_.first(rows), (v, k) => {
             q.onDupUpdate(`${wrapUptick(k)} = VALUES(${wrapUptick(k)})`);
@@ -171,9 +180,7 @@ module.exports = ({
             .build()
             .replace()
             .into(wrapUptick(table))
-            .setFieldsRows(
-              _.map(rows, r => _.mapKeys(r, (v, k) => wrapUptick(k)))
-            )
+            .setFieldsRows(prepareWriteData(rows))
             .run()
             .then((resp: any) =>
               _.extend(resp, {

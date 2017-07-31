@@ -15,6 +15,14 @@ describe('write.unit', () => {
   beforeEach(clearAllTables);
 
   describe('insert', () => {
+    it('should handle explicitly undefined column', () =>
+      write
+        .insert('defaultValue', { id: 'a', default: undefined })
+        .then(() => all('defaultValue'))
+        .then(rows => {
+          expect(rows).to.deep.equal([{ id: 'a', default: 'DEFAULT' }]);
+        }));
+
     it('should create a new database row', () =>
       write
         .insert('key', { id: 'A' })
@@ -84,6 +92,9 @@ describe('write.unit', () => {
             { a: 'M', b: 'N' },
           ]);
         }));
+
+    it('should handle explicitly undefined column', () =>
+      write.update('defaultValue', { id: 'a', default: undefined }));
   });
 
   describe('delete', () => {
@@ -162,6 +173,17 @@ describe('write.unit', () => {
             { id: 'B', default: 'bar' },
           ]);
         }));
+
+    it('should handle explicitly undefined value', () =>
+      write
+        .save('defaultValue', {
+          id: 'a',
+          default: undefined,
+        })
+        .then(() => all('defaultValue'))
+        .then(rows => {
+          expect(rows).to.deep.equal([{ id: 'a', default: 'DEFAULT' }]);
+        }));
   });
 
   describe('replace', () => {
@@ -232,6 +254,17 @@ describe('write.unit', () => {
             { id: 'A', default: 'DEFAULT' },
             { id: 'B', default: 'bar' },
           ]);
+        }));
+
+    it('should handle explicitly undefined', () =>
+      write
+        .replace('defaultValue', {
+          id: 'a',
+          default: undefined,
+        })
+        .then(() => all('defaultValue'))
+        .then(rows => {
+          expect(rows).to.deep.equal([{ id: 'a', default: 'DEFAULT' }]);
         }));
   });
 });
