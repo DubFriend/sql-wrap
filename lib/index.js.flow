@@ -90,7 +90,6 @@ export type SqlWrap = {
   escape: () => (data: mixed) => mixed,
   escapeId: () => (data: string) => string,
   encodeCursor: (
-    // orderBy: Array<SqlWrapMappedOrderByObject>,
     orderBy:
       | string
       | SqlWrapOrderByObject
