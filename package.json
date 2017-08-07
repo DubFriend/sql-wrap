@@ -1,6 +1,6 @@
 {
   "name": "sql-wrap",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Makes working with sql easy",
   "main": "lib/index.js",
   "repository": {

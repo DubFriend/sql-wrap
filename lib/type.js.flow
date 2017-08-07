@@ -10,7 +10,7 @@ export type SqlWrapDeserializeField = (fieldFromDB: mixed) => mixed;
 
 export type SqlWrapOrderByObject = {
   field: string,
-  direction: SqlWrapOrderByDirection,
+  direction?: SqlWrapOrderByDirection,
   serialize?: SqlWrapSerializeField,
   deserialize?: SqlWrapDeserializeField,
 };

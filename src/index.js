@@ -13,7 +13,7 @@ import type {
   SqlWrapType,
   SqlWrapQueryWriteOutput,
   SqlWrapQueryBuilder,
-  SqlWrapMappedOrderByObject,
+  SqlWrapOrderByObject,
 } from './type';
 
 import type { Readable } from 'stream';
@@ -90,7 +90,10 @@ export type SqlWrap = {
   escape: () => (data: mixed) => mixed,
   escapeId: () => (data: string) => string,
   encodeCursor: (
-    orderBy: Array<SqlWrapMappedOrderByObject>,
+    orderBy:
+      | string
+      | SqlWrapOrderByObject
+      | Array<string | SqlWrapOrderByObject>,
     row: Object
   ) => string,
 };
