@@ -25,6 +25,7 @@ import type { Readable } from 'stream';
 import Promise from 'bluebird';
 import _ from 'lodash';
 import squelUnflavored from 'squel';
+import wrapUptick from './wrap-uptick';
 
 const CURSOR_DELIMETER = '#';
 
@@ -358,6 +359,24 @@ module.exports = ({
         if (value !== undefined) {
           s.where(sql, value);
         }
+        return s;
+      };
+
+      s.whereIn = wheres => {
+        if (wheres.length) {
+          const ors = squel.expr();
+          _.each(wheres, where => {
+            const ands = squel.expr();
+            _.each(where, (v, k) => {
+              ands.and(`${wrapUptick(k)} = ?`, v);
+            });
+            ors.or(ands);
+          });
+          s.where(ors);
+        } else {
+          s.where('FALSE');
+        }
+
         return s;
       };
 

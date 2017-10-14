@@ -23,7 +23,7 @@ import wrapUptick from './wrap-uptick';
 
 const resolveConfig = (
   tableOrConfig: string | SqlWrapSelectConfig,
-  where?: Object
+  where?: Object | Array<Object>
 ): SqlWrapSelectConfig => {
   const resolved = {};
   if (typeof tableOrConfig === 'string') {
@@ -55,7 +55,7 @@ module.exports = ({
 
   self.select = (
     tableOrConfig: string | SqlWrapSelectConfig,
-    maybeWhere?: Object
+    maybeWhere?: Object | Array<Object>
   ): Promise<
     Array<Object> | { results: Array<Object>, resultCount: number }
   > => {
@@ -65,10 +65,12 @@ module.exports = ({
     );
     const q = query.build().select().from(wrapUptick(table));
     if (where) {
-      _.each(where, (v, k) => {
-        q.where(`${wrapUptick(k)} = ?`, v);
-      });
+      q.whereIn(Array.isArray(where) ? where : [where]);
+      // _.each(where, (v, k) => {
+      //   q.where(`${wrapUptick(k)} = ?`, v);
+      // });
     }
+
     if (fields) {
       _.each(fields, f => {
         q.field(f);
@@ -80,7 +82,7 @@ module.exports = ({
 
   self.stream = (
     tableOrConfig: string | SqlWrapSelectConfig,
-    maybeWhere?: Object
+    maybeWhere?: Object | Array<Object>
   ): Readable => {
     const { table, fields, nestTables, where } = resolveConfig(
       tableOrConfig,
@@ -88,9 +90,10 @@ module.exports = ({
     );
     const q = query.build().select().from(wrapUptick(table));
     if (where) {
-      _.each(where, (v, k) => {
-        q.where(`${wrapUptick(k)} = ?`, v);
-      });
+      q.whereIn(Array.isArray(where) ? where : [where]);
+      // _.each(where, (v, k) => {
+      //   q.where(`${wrapUptick(k)} = ?`, v);
+      // });
     }
     if (fields) {
       _.each(fields, f => {
@@ -102,7 +105,7 @@ module.exports = ({
 
   self.selectOne = (
     tableOrConfig: string | SqlWrapSelectConfig,
-    maybeWhere?: Object
+    maybeWhere?: Object | Array<Object>
   ): Promise<Object | null> =>
     self.select(tableOrConfig, maybeWhere).then(resp => {
       const response: any = Array.isArray(resp)

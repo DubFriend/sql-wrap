@@ -39,11 +39,6 @@ module.exports = ({
           .mapKeys((v, k) => wrapUptick(k))
           .value();
 
-  // const prepareWriteRows = rows =>
-  //   _.chain(rows)
-  //     .omitBy(_.isUndefined)
-  //     .map(r => _.mapKeys(r, (v, k) => wrapUptick(k)));
-
   self.insert = (
     table: string,
     rowOrRows: Array<Object> | Object
@@ -83,8 +78,12 @@ module.exports = ({
   self.update = (
     table: string,
     updates: Object,
-    where?: Object
+    where?: Object | Array<Object>
   ): Promise<SqlWrapQueryWriteOutput> => {
+    if (Array.isArray(where) && !where.length) {
+      return Promise.resolve();
+    }
+
     const q = query
       .build()
       .update()
@@ -92,9 +91,7 @@ module.exports = ({
       .setFields(prepareWriteData(updates));
 
     if (where) {
-      _.each(where, (v, k) => {
-        q.where(`${wrapUptick(k)} = ?`, v);
-      });
+      q.whereIn(Array.isArray(where) ? where : [where]);
     }
 
     const response: any = q.run();
@@ -103,13 +100,15 @@ module.exports = ({
 
   self.delete = (
     table: string,
-    where?: Object
+    where?: Object | Array<Object>
   ): Promise<SqlWrapQueryWriteOutput> => {
+    if (Array.isArray(where) && !where.length) {
+      return Promise.resolve();
+    }
+
     const q = query.build().delete().from(wrapUptick(table));
     if (where) {
-      _.each(where, (v, k) => {
-        q.where(`${wrapUptick(k)} = ?`, v);
-      });
+      q.whereIn(Array.isArray(where) ? where : [where]);
     }
     const response: any = q.run();
     return response;

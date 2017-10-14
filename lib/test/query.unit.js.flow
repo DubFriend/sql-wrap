@@ -601,6 +601,43 @@ describe('query', () => {
         });
     });
 
+    describe('whereIn', () => {
+      it('should have a whereIn method', () =>
+        query
+          .build()
+          .select()
+          .from('compoundKey')
+          .whereIn([{ a: 'A', b: 'A' }, { a: 'B', b: 'B' }])
+          .run()
+          .then(resp => {
+            expect(resp).to.have.lengthOf(2);
+            expect(resp).to.have.deep.members([a, b]);
+          }));
+
+      it('should handle single element', () =>
+        query
+          .build()
+          .select()
+          .from('compoundKey')
+          .whereIn([{ a: 'A', b: 'A' }])
+          .run()
+          .then(resp => {
+            expect(resp).to.have.lengthOf(1);
+            expect(resp).to.have.deep.members([a]);
+          }));
+
+      it('should handle on empty array', () =>
+        query
+          .build()
+          .select()
+          .from('compoundKey')
+          .whereIn([])
+          .run()
+          .then(resp => {
+            expect(resp).to.deep.equal([]);
+          }));
+    });
+
     it('should have whereIfDefined method', () =>
       query
         .build()

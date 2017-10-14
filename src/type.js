@@ -90,7 +90,7 @@ export type SqlWrapSelectConfig = {
   fields?: Array<string>,
   paginate?: SqlWrapPagination,
   nestTables?: boolean,
-  where?: Object,
+  where?: Object | Array<Object>,
 };
 
 export type SqlWrapSelectStreamConfig = {
@@ -115,12 +115,13 @@ export type SqlWrapQueryBuilder = {|
   ) => SqlWrapQueryBuilder,
   from: (table: string, tableNickName?: string) => SqlWrapQueryBuilder,
   where: (statement: string, value?: mixed) => SqlWrapQueryBuilder,
+  whereIfDefined: (statement: string, value?: mixed) => SqlWrapQueryBuilder,
+  whereIn: (where: Array<Object>) => SqlWrapQueryBuilder,
   onDupUpdate: (
     field: string,
     value: mixed,
     options?: Object
   ) => SqlWrapQueryBuilder,
-  whereIfDefined: (statement: string, value?: mixed) => SqlWrapQueryBuilder,
   set: (
     field: string,
     value: mixed,
