@@ -95,6 +95,25 @@ describe('write.unit', () => {
 
     it('should handle explicitly undefined column', () =>
       write.update('defaultValue', { id: 'a', default: undefined }));
+
+    it('should handle bulk updates', () =>
+      Promise.all([
+        insert('compoundKey', { a: 'A', b: 'B' }),
+        insert('compoundKey', { a: 'M', b: 'N' }),
+      ])
+        .then(() =>
+          write.update('compoundKey', [
+            { update: { b: 'C' }, where: { a: 'A' } },
+            { update: { b: 'O' }, where: { a: 'M' } },
+          ])
+        )
+        .then(() => all('compoundKey'))
+        .then(rows => {
+          expect(rows).to.have.same.deep.members([
+            { a: 'A', b: 'C' },
+            { a: 'M', b: 'O' },
+          ]);
+        }));
   });
 
   describe('delete', () => {

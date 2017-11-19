@@ -77,25 +77,47 @@ module.exports = ({
 
   self.update = (
     table: string,
-    updates: Object,
+    updates: Object | Array<{ update: Object, where: Object | Array<Object> }>,
     where?: Object | Array<Object>
-  ): Promise<SqlWrapQueryWriteOutput> => {
-    if (Array.isArray(where) && !where.length) {
-      return Promise.resolve();
+  ): Promise<*> => {
+    if (Array.isArray(updates)) {
+      const queries = _.map(updates, ({ update, where }) => {
+        const q = query
+          .build()
+          .update()
+          .table(wrapUptick(table))
+          .setFields(prepareWriteData(update));
+
+        if (where) {
+          q.whereIn(Array.isArray(where) ? where : [where]);
+        }
+
+        return q.toParam();
+      });
+
+      return driver.query({
+        sql: _.map(queries, ({ text }) => text).join(';\n'),
+        values: _.chain(queries).map(({ values }) => values).flatten().value(),
+      });
+    } else {
+      if (Array.isArray(where) && !where.length) {
+        return Promise.resolve();
+      }
+
+      const q = query
+        .build()
+        .update()
+        .table(wrapUptick(table))
+        .setFields(prepareWriteData(updates));
+
+      if (where) {
+        q.whereIn(Array.isArray(where) ? where : [where]);
+      }
+
+      // const response: any = q.run();
+      // return response;
+      return q.run();
     }
-
-    const q = query
-      .build()
-      .update()
-      .table(wrapUptick(table))
-      .setFields(prepareWriteData(updates));
-
-    if (where) {
-      q.whereIn(Array.isArray(where) ? where : [where]);
-    }
-
-    const response: any = q.run();
-    return response;
   };
 
   self.delete = (

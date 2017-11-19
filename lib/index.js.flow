@@ -74,7 +74,7 @@ export type SqlWrap = {
   ) => Promise<Array<SqlWrapQueryWriteOutput> | SqlWrapQueryWriteOutput>,
   update: (
     table: string,
-    updates: Object,
+    updates: Object | Array<{ update: Object, where: Object | Array<Object> }>,
     where?: Object
   ) => Promise<SqlWrapQueryWriteOutput>,
   delete: (table: string, where?: Object) => Promise<SqlWrapQueryWriteOutput>,

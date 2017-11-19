@@ -7,6 +7,7 @@ const rawPool = require('mysql').createPool({
   user: 'root',
   password: 'password',
   database: 'test',
+  multipleStatements: true,
 });
 
 exports.pool = {
