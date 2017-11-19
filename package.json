@@ -1,6 +1,6 @@
 {
   "name": "sql-wrap",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Makes working with sql easy",
   "main": "lib/index.js",
   "repository": {
@@ -40,7 +40,7 @@
     "gulp-babel": "^6.1.2",
     "gulp-mocha": "^4.3.1",
     "mocha": "^3.4.2",
-    "mysql": "^2.13.0",
+    "mysql": "^2.15.0",
     "prettier": "^1.5.3",
     "sinon": "^2.3.8",
     "yargs": "^8.0.2"

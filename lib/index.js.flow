@@ -25,6 +25,7 @@ import sqlString from 'sqlstring';
 import createQuery from './query';
 import createRead from './read';
 import createWrite from './write';
+import mysqlDriverAdaper from './mysql-driver-adapter';
 
 export type SqlWrap = {
   connection: () => Promise<*>,
@@ -75,9 +76,9 @@ export type SqlWrap = {
   update: (
     table: string,
     updates: Object | Array<{ update: Object, where: Object | Array<Object> }>,
-    where?: Object
-  ) => Promise<SqlWrapQueryWriteOutput>,
-  delete: (table: string, where?: Object) => Promise<SqlWrapQueryWriteOutput>,
+    where?: Object | Array<Object>
+  ) => Promise<*>,
+  delete: (table: string, where?: Object | Array<Object>) => Promise<*>,
   save: (
     table: string,
     rowOrRows: Array<Object> | Object
@@ -169,5 +170,7 @@ const createSqlWrap = ({
 
   return self;
 };
+
+createSqlWrap.mysqlDriverAdaper = mysqlDriverAdaper;
 
 module.exports = createSqlWrap;
