@@ -114,6 +114,8 @@ describe('write.unit', () => {
             { a: 'M', b: 'O' },
           ]);
         }));
+
+    it('should handle empty array', () => write.update('compoundKey', []));
   });
 
   describe('delete', () => {

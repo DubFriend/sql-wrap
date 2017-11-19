@@ -81,6 +81,10 @@ module.exports = ({
     where?: Object | Array<Object>
   ): Promise<*> => {
     if (Array.isArray(updates)) {
+      if (!updates.length) {
+        return Promise.resolve();
+      }
+
       const queries = _.map(updates, ({ update, where }) => {
         const q = query
           .build()
@@ -114,8 +118,6 @@ module.exports = ({
         q.whereIn(Array.isArray(where) ? where : [where]);
       }
 
-      // const response: any = q.run();
-      // return response;
       return q.run();
     }
   };
