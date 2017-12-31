@@ -296,6 +296,25 @@ describe('query', () => {
           });
         }));
 
+    it('should handle cursor with zero results', () =>
+      query
+        .build()
+        .select()
+        .from('compoundKey')
+        .run(cursorFig({ first: 0 }))
+        .then(resp => {
+          expect(resp).to.deep.equal({
+            resultCount: 3,
+            pageInfo: {
+              hasNextPage: false,
+              hasPreviousPage: false,
+              startCursor: null,
+              endCursor: null,
+            },
+            edges: [],
+          });
+        }));
+
     it('should handle orderBy with direction', () =>
       query
         .build()

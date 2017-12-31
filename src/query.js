@@ -213,8 +213,8 @@ module.exports = ({
           pageInfo: {
             hasPreviousPage: fig.last ? resp.resultCount > fig.last : false,
             hasNextPage: fig.first ? resp.resultCount > fig.first : false,
-            startCursor: _.first(edges).cursor,
-            endCursor: _.last(edges).cursor,
+            startCursor: (_.first(edges) && _.first(edges).cursor) || null,
+            endCursor: (_.last(edges) && _.last(edges).cursor) || null,
           },
           edges,
         };
