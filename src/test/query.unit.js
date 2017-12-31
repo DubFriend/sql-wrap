@@ -289,6 +289,8 @@ describe('query', () => {
             pageInfo: {
               hasNextPage: false,
               hasPreviousPage: false,
+              startCursor: _.first(rowsToEdges([a, b, c])).cursor,
+              endCursor: _.last(rowsToEdges([a, b, c])).cursor,
             },
             edges: rowsToEdges([a, b, c]),
           });
@@ -311,6 +313,8 @@ describe('query', () => {
             pageInfo: {
               hasNextPage: false,
               hasPreviousPage: false,
+              startCursor: _.first(rowsToEdges([c, b, a])).cursor,
+              endCursor: _.last(rowsToEdges([c, b, a])).cursor,
             },
             edges: rowsToEdges([c, b, a]),
           });
@@ -331,16 +335,19 @@ describe('query', () => {
           })
         )
         .then(resp => {
+          const edges = _.map([a, b, c], r => ({
+            node: r,
+            cursor: toCursor({ a: r.a.toLowerCase() }, 'a'),
+          }));
           expect(resp).to.deep.equal({
             resultCount: 3,
             pageInfo: {
               hasNextPage: false,
               hasPreviousPage: false,
+              startCursor: _.first(edges).cursor,
+              endCursor: _.last(edges).cursor,
             },
-            edges: _.map([a, b, c], r => ({
-              node: r,
-              cursor: toCursor({ a: r.a.toLowerCase() }, 'a'),
-            })),
+            edges,
           });
         }));
 
@@ -365,6 +372,8 @@ describe('query', () => {
             pageInfo: {
               hasNextPage: false,
               hasPreviousPage: false,
+              startCursor: _.first(rowsToEdges([c])).cursor,
+              endCursor: _.last(rowsToEdges([c])).cursor,
             },
             edges: rowsToEdges([c]),
           });
@@ -382,6 +391,8 @@ describe('query', () => {
             pageInfo: {
               hasNextPage: true,
               hasPreviousPage: false,
+              startCursor: _.first(rowsToEdges([a])).cursor,
+              endCursor: _.last(rowsToEdges([a])).cursor,
             },
             edges: rowsToEdges([a]),
           });
@@ -399,6 +410,8 @@ describe('query', () => {
             pageInfo: {
               hasNextPage: false,
               hasPreviousPage: true,
+              startCursor: _.first(rowsToEdges([c])).cursor,
+              endCursor: _.last(rowsToEdges([c])).cursor,
             },
             edges: rowsToEdges([c]),
           });
@@ -416,6 +429,8 @@ describe('query', () => {
             pageInfo: {
               hasNextPage: false,
               hasPreviousPage: false,
+              startCursor: _.first(rowsToEdges([b, c])).cursor,
+              endCursor: _.last(rowsToEdges([b, c])).cursor,
             },
             edges: rowsToEdges([b, c]),
           });
@@ -433,6 +448,8 @@ describe('query', () => {
             pageInfo: {
               hasNextPage: false,
               hasPreviousPage: false,
+              startCursor: _.first(rowsToEdges([a, b])).cursor,
+              endCursor: _.last(rowsToEdges([a, b])).cursor,
             },
             edges: rowsToEdges([a, b]),
           });
@@ -455,6 +472,8 @@ describe('query', () => {
             pageInfo: {
               hasNextPage: true,
               hasPreviousPage: false,
+              startCursor: _.first(rowsToEdges([b])).cursor,
+              endCursor: _.last(rowsToEdges([b])).cursor,
             },
             edges: rowsToEdges([b]),
           });
@@ -472,6 +491,8 @@ describe('query', () => {
             pageInfo: {
               hasNextPage: false,
               hasPreviousPage: true,
+              startCursor: _.first(rowsToEdges([c])).cursor,
+              endCursor: _.last(rowsToEdges([c])).cursor,
             },
             edges: rowsToEdges([c]),
           });
@@ -489,6 +510,8 @@ describe('query', () => {
             pageInfo: {
               hasNextPage: true,
               hasPreviousPage: false,
+              startCursor: _.first(rowsToEdges([a])).cursor,
+              endCursor: _.last(rowsToEdges([a])).cursor,
             },
             edges: rowsToEdges([a]),
           });
@@ -506,6 +529,8 @@ describe('query', () => {
             pageInfo: {
               hasNextPage: false,
               hasPreviousPage: true,
+              startCursor: _.first(rowsToEdges([b])).cursor,
+              endCursor: _.last(rowsToEdges([b])).cursor,
             },
             edges: rowsToEdges([b]),
           });
@@ -524,6 +549,8 @@ describe('query', () => {
             pageInfo: {
               hasNextPage: false,
               hasPreviousPage: false,
+              startCursor: _.first(rowsToEdges([a, c, b], orderBy)).cursor,
+              endCursor: _.last(rowsToEdges([a, c, b], orderBy)).cursor,
             },
             edges: rowsToEdges([a, c, b], orderBy),
           });
@@ -539,13 +566,16 @@ describe('query', () => {
         .from('compoundKey')
         .run(cursorFig({ orderBy: orderBy, first: 100 }))
         .then(resp => {
+          const edges = rowsToEdges([c, a, b], _.map(orderBy, o => o.field));
           expect(resp).to.deep.equal({
             resultCount: 3,
             pageInfo: {
               hasNextPage: false,
               hasPreviousPage: false,
+              startCursor: _.first(edges).cursor,
+              endCursor: _.last(edges).cursor,
             },
-            edges: rowsToEdges([c, a, b], _.map(orderBy, o => o.field)),
+            edges,
           });
         });
     });
@@ -570,6 +600,8 @@ describe('query', () => {
             pageInfo: {
               hasNextPage: false,
               hasPreviousPage: false,
+              startCursor: _.first(rowsToEdges([c], orderBy)).cursor,
+              endCursor: _.last(rowsToEdges([c], orderBy)).cursor,
             },
             edges: rowsToEdges([c], orderBy),
           });
@@ -590,13 +622,16 @@ describe('query', () => {
           })
         )
         .then(resp => {
+          const edges = rowsToEdges([c, a], _.map(orderBy, o => o.field));
           expect(resp).to.deep.equal({
             resultCount: 2,
             pageInfo: {
               hasNextPage: false,
               hasPreviousPage: false,
+              startCursor: _.first(edges).cursor,
+              endCursor: _.last(edges).cursor,
             },
-            edges: rowsToEdges([c, a], _.map(orderBy, o => o.field)),
+            edges,
           });
         });
     });

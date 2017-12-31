@@ -203,17 +203,22 @@ module.exports = ({
           );
         }
       })
-      .then(resp => ({
-        resultCount: resp.resultCount,
-        pageInfo: {
-          hasPreviousPage: fig.last ? resp.resultCount > fig.last : false,
-          hasNextPage: fig.first ? resp.resultCount > fig.first : false,
-        },
-        edges: _.map(resp.results, r => ({
+      .then(resp => {
+        const edges = _.map(resp.results, r => ({
           node: r,
           cursor: encodeCursor(orderBy, r),
-        })),
-      }));
+        }));
+        return {
+          resultCount: resp.resultCount,
+          pageInfo: {
+            hasPreviousPage: fig.last ? resp.resultCount > fig.last : false,
+            hasNextPage: fig.first ? resp.resultCount > fig.first : false,
+            startCursor: _.first(edges).cursor,
+            endCursor: _.last(edges).cursor,
+          },
+          edges,
+        };
+      });
   };
 
   const encodeCursor = (
