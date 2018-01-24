@@ -190,7 +190,7 @@ module.exports = ({
             TemplatedValue
               ? v.template
               : '?'})`
-        ).join(', ')}`,
+        ).join(' AND ')}`,
         values,
       };
     };

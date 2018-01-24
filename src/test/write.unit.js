@@ -150,6 +150,20 @@ describe('write.unit', () => {
           ]);
         }));
 
+    it('should handle multiple where conditions', () =>
+      Promise.all([
+        insert('compoundKey', { a: 'A', b: 'B' }),
+        insert('compoundKey', { a: 'M', b: 'B' }),
+      ])
+        .then(() => write.update('compoundKey', { b: 'C' }, { a: 'A', b: 'B' }))
+        .then(() => all('compoundKey'))
+        .then(rows => {
+          expect(rows).to.have.same.deep.members([
+            { a: 'A', b: 'C' },
+            { a: 'M', b: 'B' },
+          ]);
+        }));
+
     it('should handle empty array', () => write.update('compoundKey', []));
 
     it('should allow mysql functions in values', () =>
