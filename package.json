@@ -8,7 +8,8 @@
     "url": "git@github.com:DubFriend/sql-wrap.git"
   },
   "scripts": {
-    "prepublish": "gulp build"
+    "prepublish": "gulp build",
+    "test": "gulp test"
   },
   "author": "Brian Detering",
   "license": "MIT",

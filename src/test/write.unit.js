@@ -1,10 +1,16 @@
 // @flow
 /* eslint-disable no-unused-expressions */
+declare var describe: any;
+declare var it: any;
+declare var beforeEach: any;
+declare var afterEach: any;
+
 import _ from 'lodash';
 import Promise from 'bluebird';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { pool, truncateTable, all, clearAllTables, insert } from './sql';
+import CompiledValue from '../compiled-value';
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -71,10 +77,21 @@ describe('write.unit', () => {
 
     it('should handle Date object as insert value', () =>
       write
-        .insert('timestamp', { id: new Date(2000) })
+        .insert('timestamp', { id: new Date(2000000000) })
         .then(() => all('timestamp'))
         .then(rows => {
-          expect(rows).to.deep.equal([{ id: new Date(2000) }]);
+          expect(rows).to.deep.equal([{ id: new Date(2000000000) }]);
+        }));
+
+    it('should allow mysql functions in values', () =>
+      write
+        .insert('defaultValue', {
+          id: 'a',
+          default: new CompiledValue('CONCAT("?", "?")', 'a', 'b'),
+        })
+        .then(() => all('defaultValue'))
+        .then(rows => {
+          expect(rows).to.deep.equal([{ id: 'a', default: 'ab' }]);
         }));
   });
 

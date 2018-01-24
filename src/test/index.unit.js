@@ -1,5 +1,10 @@
 // @flow
 /* eslint-disable no-unused-expressions */
+declare var describe: any;
+declare var it: any;
+declare var beforeEach: any;
+declare var afterEach: any;
+
 import _ from 'lodash';
 import Promise from 'bluebird';
 import chai from 'chai';
