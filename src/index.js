@@ -26,6 +26,7 @@ import createQuery from './query';
 import createRead from './read';
 import createWrite from './write';
 import mysqlDriverAdaper from './mysql-driver-adapter';
+import TemplatedValue from './templated-value';
 
 export type SqlWrap = {
   connection: () => Promise<*>,
@@ -167,6 +168,9 @@ const createSqlWrap = ({
 
   self.encodeCursor = (orderBy: *, row: *): * =>
     query.encodeCursor(orderBy, row);
+
+  self.templatedValue = (template: string, ...args: Array<mixed>) =>
+    new TemplatedValue(template, ...args);
 
   return self;
 };

@@ -13,7 +13,7 @@ gulp.task('clean-flow', () => del('lib/**/*.flow'));
 gulp.task('transpile', ['clean-js'], () =>
   gulp
     .src('src/**/*.js')
-    .pipe(babel({ presets: ['flow', 'es2015'] }))
+    .pipe(babel({ presets: ['flow', 'es2015', 'stage-0'] }))
     .pipe(gulp.dest('lib'))
 );
 

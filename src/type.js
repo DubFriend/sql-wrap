@@ -32,6 +32,7 @@ export type SqlWrapQueryWriteOutput = {
   message: string,
   changedRows: number,
 };
+
 export type SqlWrapQuery = ({
   sql: string,
   nestTables?: boolean,

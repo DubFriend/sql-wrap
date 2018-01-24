@@ -10,7 +10,9 @@ import Promise from 'bluebird';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { pool, truncateTable, all, clearAllTables, insert } from './sql';
-import CompiledValue from '../compiled-value';
+import TemplatedValue from '../templated-value';
+
+import squel from 'squel';
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -34,7 +36,7 @@ describe('write.unit', () => {
         .insert('key', { id: 'A' })
         .then(resp => {
           expect(JSON.parse(JSON.stringify(resp))).to.deep.equal({
-            bulkWriteKey: 'id',
+            bulkWriteKey: '`id`',
             fieldCount: 0,
             affectedRows: 1,
             insertId: 0,
@@ -87,7 +89,7 @@ describe('write.unit', () => {
       write
         .insert('defaultValue', {
           id: 'a',
-          default: new CompiledValue('CONCAT("?", "?")', 'a', 'b'),
+          default: new TemplatedValue('CONCAT(?, ?)', 'a', 'b'),
         })
         .then(() => all('defaultValue'))
         .then(rows => {
@@ -132,7 +134,36 @@ describe('write.unit', () => {
           ]);
         }));
 
+    it('should handle where in', () =>
+      Promise.all([
+        insert('compoundKey', { a: 'A', b: 'B' }),
+        insert('compoundKey', { a: 'M', b: 'N' }),
+        insert('compoundKey', { a: 'J', b: 'P' }),
+      ])
+        .then(() => write.update('compoundKey', { b: 'C' }, { a: ['A', 'M'] }))
+        .then(() => all('compoundKey'))
+        .then(rows => {
+          expect(rows).to.have.same.deep.members([
+            { a: 'A', b: 'C' },
+            { a: 'M', b: 'C' },
+            { a: 'J', b: 'P' },
+          ]);
+        }));
+
     it('should handle empty array', () => write.update('compoundKey', []));
+
+    it('should allow mysql functions in values', () =>
+      insert('defaultValue', { id: 'a', default: 'foo' })
+        .then(() =>
+          write.update('defaultValue', {
+            id: 'a',
+            default: new TemplatedValue('CONCAT(?, ?)', 'a', 'b'),
+          })
+        )
+        .then(() => all('defaultValue'))
+        .then(rows => {
+          expect(rows).to.deep.equal([{ id: 'a', default: 'ab' }]);
+        }));
   });
 
   describe('delete', () => {
@@ -151,7 +182,7 @@ describe('write.unit', () => {
         .save('compoundKey', { b: 'B', a: 'A' })
         .then(resp => {
           expect(JSON.parse(JSON.stringify(resp))).to.deep.equal({
-            bulkWriteKey: 'a:b',
+            bulkWriteKey: '`a`:`b`',
             fieldCount: 0,
             affectedRows: 1,
             insertId: 0,
@@ -222,6 +253,19 @@ describe('write.unit', () => {
         .then(rows => {
           expect(rows).to.deep.equal([{ id: 'a', default: 'DEFAULT' }]);
         }));
+
+    it('should allow mysql functions in values', () =>
+      insert('defaultValue', { id: 'A', default: 'foo' })
+        .then(() =>
+          write.save('defaultValue', {
+            id: 'a',
+            default: new TemplatedValue('CONCAT(?, ?)', 'a', 'b'),
+          })
+        )
+        .then(() => all('defaultValue'))
+        .then(rows => {
+          expect(rows).to.deep.equal([{ id: 'a', default: 'ab' }]);
+        }));
   });
 
   describe('replace', () => {
@@ -230,7 +274,7 @@ describe('write.unit', () => {
         .replace('defaultValue', { id: 'A', default: 'foo' })
         .then(resp => {
           expect(JSON.parse(JSON.stringify(resp))).to.deep.equal({
-            bulkWriteKey: 'default:id',
+            bulkWriteKey: '`default`:`id`',
             fieldCount: 0,
             affectedRows: 1,
             insertId: 0,
@@ -296,13 +340,21 @@ describe('write.unit', () => {
 
     it('should handle explicitly undefined', () =>
       write
-        .replace('defaultValue', {
-          id: 'a',
-          default: undefined,
-        })
+        .replace('defaultValue', { id: 'a', default: undefined })
         .then(() => all('defaultValue'))
         .then(rows => {
           expect(rows).to.deep.equal([{ id: 'a', default: 'DEFAULT' }]);
+        }));
+
+    it('should allow mysql functions in values', () =>
+      write
+        .replace('defaultValue', {
+          id: 'a',
+          default: new TemplatedValue('CONCAT(?, ?)', 'a', 'b'),
+        })
+        .then(() => all('defaultValue'))
+        .then(rows => {
+          expect(rows).to.deep.equal([{ id: 'a', default: 'ab' }]);
         }));
   });
 });

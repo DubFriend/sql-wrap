@@ -12,6 +12,7 @@ import chaiAsPromised from 'chai-as-promised';
 import sinon from 'sinon';
 import { pool, truncateTable, all, clearAllTables, insert } from './sql';
 import stream from 'stream';
+import TemplatedValue from '../templated-value';
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -151,6 +152,15 @@ describe('index.unit', () => {
   describe('escapeId', () => {
     it('should escape id', () => {
       expect(index.escapeId('foo')).to.equal('`foo`');
+    });
+  });
+
+  describe('templatedValue', () => {
+    it('should create a templated value object', () => {
+      const value = index.templatedValue('foo', 'bar');
+      expect(value).to.be.instanceof(TemplatedValue);
+      expect(value.template).to.equal('foo');
+      expect(value.arguments).to.deep.equal(['bar']);
     });
   });
 });
