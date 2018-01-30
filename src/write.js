@@ -41,20 +41,40 @@ module.exports = ({
           .mapKeys((v, k) => wrapUptick(k))
           .value();
 
-  const reduceRowsIntoPlaceholdersAndValues = rows =>
+  const reduceRowsIntoPlaceholdersAndValues = ({
+    columns,
+    rows,
+  }: {|
+    columns?: Array<string>,
+    rows: Array<Object>,
+  |}) =>
     _.reduce(
       rows,
       ({ placeholders, values }, row) => {
         const rowOfPlaceholders = [];
-        _.each(row, (v, k) => {
-          if (v instanceof TemplatedValue) {
-            rowOfPlaceholders.push(v.template);
-            values = values.concat(v.arguments);
-          } else {
-            rowOfPlaceholders.push('?');
-            values.push(v);
-          }
-        });
+
+        if (columns) {
+          _.each(columns, k => {
+            const v = row[k];
+            if (v instanceof TemplatedValue) {
+              rowOfPlaceholders.push(v.template);
+              values = values.concat(v.arguments);
+            } else {
+              rowOfPlaceholders.push('?');
+              values.push(v);
+            }
+          });
+        } else {
+          _.each(row, (v, k) => {
+            if (v instanceof TemplatedValue) {
+              rowOfPlaceholders.push(v.template);
+              values = values.concat(v.arguments);
+            } else {
+              rowOfPlaceholders.push('?');
+              values.push(v);
+            }
+          });
+        }
 
         placeholders.push(rowOfPlaceholders);
         return { placeholders, values };
@@ -62,13 +82,14 @@ module.exports = ({
       { placeholders: [], values: [] }
     );
 
-  const buildInsertQuery = ({ operation = 'INSERT', table, rows }) => {
-    const { placeholders, values } = reduceRowsIntoPlaceholdersAndValues(rows);
+  const buildWriteQuery = ({ operation, table, rows }) => {
+    const columns = _.chain(rows).first().keys().value();
+    const { placeholders, values } = reduceRowsIntoPlaceholdersAndValues({
+      columns,
+      rows,
+    });
     return {
-      text: `${operation} INTO ${wrapUptick(table)} (${_.chain(rows)
-        .first()
-        .keys()
-        .value()}) VALUES ${_.map(
+      text: `${operation} INTO ${wrapUptick(table)} (${columns}) VALUES ${_.map(
         placeholders,
         row => `(${row.join(', ')})`
       ).join(', ')}`,
@@ -76,7 +97,7 @@ module.exports = ({
     };
   };
 
-  const keyByColumns = (fig: Object): string =>
+  const keyByColumns = (fig: *): string =>
     _.chain(fig).map((v, k) => k).sort().join(':');
 
   self.insert = (
@@ -99,7 +120,11 @@ module.exports = ({
 
       return Promise.all(
         _.map(grouped, (rows, key) => {
-          const { text, values } = buildInsertQuery({ table, rows });
+          const { text, values } = buildWriteQuery({
+            operation: 'INSERT',
+            table,
+            rows,
+          });
           return query
             .rows(text, values)
             .then((resp: any) => _.extend(resp, { bulkWriteKey: key }));
@@ -130,7 +155,7 @@ module.exports = ({
 
       return Promise.all(
         _.map(grouped, (rows, key) => {
-          const { text, values } = buildInsertQuery({
+          const { text, values } = buildWriteQuery({
             operation: 'REPLACE',
             table,
             rows,
@@ -175,9 +200,9 @@ module.exports = ({
       table: string,
       update: UpdateObject,
     }) => {
-      const { values } = reduceRowsIntoPlaceholdersAndValues(
-        [update.update].concat(update.where)
-      );
+      const { values } = reduceRowsIntoPlaceholdersAndValues({
+        rows: [update.update].concat(update.where),
+      });
 
       return {
         text: `UPDATE ${wrapUptick(table)} SET ${_.map(
@@ -229,7 +254,7 @@ module.exports = ({
       Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows]
     );
 
-    if (rows.length) {
+    if (rows && rows.length) {
       const grouped = {};
       _.each(rows, r => {
         const key = keyByColumns(r);
@@ -241,7 +266,11 @@ module.exports = ({
 
       return Promise.all(
         _.map(grouped, (rows, key) => {
-          let { text, values } = buildInsertQuery({ table, rows });
+          let { text, values } = buildWriteQuery({
+            operation: 'INSERT',
+            table,
+            rows,
+          });
 
           text += ` ON DUPLICATE KEY UPDATE ${_.map(
             _.first(rows),
