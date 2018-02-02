@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import sqlString from 'sqlstring';
 
 export default class SqlWrapTemplatedValue {
   template: string;

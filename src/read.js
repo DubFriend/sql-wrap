@@ -19,7 +19,7 @@ import Promise from 'bluebird';
 import _ from 'lodash';
 import createQuery from './query';
 import squel from 'squel';
-import wrapUptick from './wrap-uptick';
+import sqlstring from 'sqlstring';
 
 const resolveConfig = (
   tableOrConfig: string | SqlWrapSelectConfig,
@@ -63,12 +63,9 @@ module.exports = ({
       tableOrConfig,
       maybeWhere
     );
-    const q = query.build().select().from(wrapUptick(table));
+    const q = query.build().select().from(sqlstring.escapeId(table));
     if (where) {
       q.whereIn(Array.isArray(where) ? where : [where]);
-      // _.each(where, (v, k) => {
-      //   q.where(`${wrapUptick(k)} = ?`, v);
-      // });
     }
 
     if (fields) {
@@ -88,12 +85,9 @@ module.exports = ({
       tableOrConfig,
       maybeWhere
     );
-    const q = query.build().select().from(wrapUptick(table));
+    const q = query.build().select().from(sqlstring.escapeId(table));
     if (where) {
       q.whereIn(Array.isArray(where) ? where : [where]);
-      // _.each(where, (v, k) => {
-      //   q.where(`${wrapUptick(k)} = ?`, v);
-      // });
     }
     if (fields) {
       _.each(fields, f => {

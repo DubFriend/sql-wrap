@@ -18,7 +18,7 @@ import Promise from 'bluebird';
 import _ from 'lodash';
 import createQuery from './query';
 import squel from 'squel';
-import wrapUptick from './wrap-uptick';
+import sqlstring from 'sqlstring';
 import TemplatedValue from './templated-value';
 
 module.exports = ({
@@ -38,7 +38,7 @@ module.exports = ({
       : d &&
         _.chain(d)
           .omitBy(_.isUndefined)
-          .mapKeys((v, k) => wrapUptick(k))
+          .mapKeys((v, k) => sqlstring.escapeId(k))
           .value();
 
   const reduceRowsIntoPlaceholdersAndValues = ({
@@ -89,7 +89,10 @@ module.exports = ({
       rows,
     });
     return {
-      text: `${operation} INTO ${wrapUptick(table)} (${columns}) VALUES ${_.map(
+      text: `${operation} INTO ${sqlstring.escapeId(table)} (${_.map(
+        columns,
+        c => c
+      ).join(', ')}) VALUES ${_.map(
         placeholders,
         row => `(${row.join(', ')})`
       ).join(', ')}`,
@@ -205,7 +208,7 @@ module.exports = ({
       });
 
       return {
-        text: `UPDATE ${wrapUptick(table)} SET ${_.map(
+        text: `UPDATE ${sqlstring.escapeId(table)} SET ${_.map(
           update.update,
           (v, k) => `${k} = ${v instanceof TemplatedValue ? v.template : '?'}`
         ).join(', ')} ${update.where ? 'WHERE' : ''} ${_.map(
@@ -238,7 +241,7 @@ module.exports = ({
       return Promise.resolve();
     }
 
-    const q = query.build().delete().from(wrapUptick(table));
+    const q = query.build().delete().from(sqlstring.escapeId(table));
     if (where) {
       q.whereIn(Array.isArray(where) ? where : [where]);
     }

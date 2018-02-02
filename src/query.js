@@ -21,11 +21,10 @@ import type {
 } from './type';
 
 import type { Readable } from 'stream';
-
 import Promise from 'bluebird';
 import _ from 'lodash';
 import squelUnflavored from 'squel';
-import wrapUptick from './wrap-uptick';
+import sqlstring from 'sqlstring';
 
 const CURSOR_DELIMETER = '#';
 
@@ -123,10 +122,12 @@ module.exports = ({
           orderBy,
           (o, i) =>
             i === values.length - 1
-              ? `${o.field} ${(o.isAscending ? isGreaterThan : !isGreaterThan)
+              ? `${sqlstring.escapeId(o.field)} ${(o.isAscending
+                ? isGreaterThan
+                : !isGreaterThan)
                   ? '>'
                   : '<'} ?`
-              : `${o.field} = ?`
+              : `${sqlstring.escapeId(o.field)} = ?`
         ).join(' AND ');
 
         let sqls = [sql];
@@ -165,11 +166,7 @@ module.exports = ({
     const { text, values } = q.toParam();
 
     return self
-      .rows({
-        sql: text,
-        values,
-        resultCount: true,
-      })
+      .rows({ sql: text, values, resultCount: true })
       .then(resp => {
         if (
           typeof resp.results === 'object' &&
@@ -373,7 +370,7 @@ module.exports = ({
           _.each(wheres, where => {
             const ands = squel.expr();
             _.each(where, (v, k) => {
-              ands.and(`${wrapUptick(k)} = ?`, v);
+              ands.and(`${sqlstring.escapeId(k)} = ?`, v);
             });
             ors.or(ands);
           });
