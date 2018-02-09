@@ -17,7 +17,8 @@ import TemplatedValue from '../templated-value';
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-const index = require('../index')({ driver: pool, sqlType: 'mysql' });
+const createIndex = require('../index');
+const index = createIndex({ driver: pool, sqlType: 'mysql' });
 
 describe('index.unit', () => {
   const stub = {};
@@ -158,6 +159,13 @@ describe('index.unit', () => {
   describe('templatedValue', () => {
     it('should create a templated value object', () => {
       const value = index.templatedValue('foo', 'bar');
+      expect(value).to.be.instanceof(TemplatedValue);
+      expect(value.template).to.equal('foo');
+      expect(value.arguments).to.deep.equal(['bar']);
+    });
+
+    it('should expose as a static method', () => {
+      const value = createIndex.templatedValue('foo', 'bar');
       expect(value).to.be.instanceof(TemplatedValue);
       expect(value.template).to.equal('foo');
       expect(value.arguments).to.deep.equal(['bar']);

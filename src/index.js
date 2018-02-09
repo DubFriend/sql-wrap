@@ -37,10 +37,7 @@ export type SqlWrap = {
   ) => Promise<
     | SqlWrapQueryWriteOutput
     | Array<Object>
-    | {
-      results: Array<Object>,
-      resultCount: number,
-    }
+    | { results: Array<Object>, resultCount: number }
   >,
   one: (
     textOrConfig: string | SqlWrapQueryConfig,
@@ -99,6 +96,9 @@ export type SqlWrap = {
     row: Object
   ) => string,
 };
+
+const templatedValue = (template: string, ...args: Array<mixed>) =>
+  new TemplatedValue(template, ...args);
 
 const createSqlWrap = ({
   driver,
@@ -169,11 +169,12 @@ const createSqlWrap = ({
   self.encodeCursor = (orderBy: *, row: *): * =>
     query.encodeCursor(orderBy, row);
 
-  self.templatedValue = (template: string, ...args: Array<mixed>) =>
-    new TemplatedValue(template, ...args);
+  self.templatedValue = templatedValue;
 
   return self;
 };
+
+createSqlWrap.templatedValue = templatedValue;
 
 createSqlWrap.mysqlDriverAdaper = mysqlDriverAdaper;
 
