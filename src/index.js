@@ -12,21 +12,23 @@ import type {
   SqlWrapSelectStreamConfig,
   SqlWrapType,
   SqlWrapQueryWriteOutput,
-  SqlWrapQueryBuilder,
-  SqlWrapOrderByObject,
-} from './type';
+  SqlWrapQueryBuilder as _SqlWrapQueryBuilder,
+  SqlWrapOrderByObject
+} from "./type";
 
-import type { Readable } from 'stream';
+import type { Readable } from "stream";
 
-import squel from 'squel';
-import Promise from 'bluebird';
-import _ from 'lodash';
-import sqlString from 'sqlstring';
-import createQuery from './query';
-import createRead from './read';
-import createWrite from './write';
-import mysqlDriverAdaper from './mysql-driver-adapter';
-import TemplatedValue from './templated-value';
+import squel from "squel";
+import Promise from "bluebird";
+import _ from "lodash";
+import sqlString from "sqlstring";
+import createQuery from "./query";
+import createRead from "./read";
+import createWrite from "./write";
+import mysqlDriverAdaper from "./mysql-driver-adapter";
+import TemplatedValue from "./templated-value";
+
+export type SqlWrapQueryBuilder = _SqlWrapQueryBuilder;
 
 export type SqlWrap = {
   connection: () => Promise<*>,
@@ -85,7 +87,7 @@ export type SqlWrap = {
     table: string,
     rowOrRows: Array<Object> | Object
   ) => Promise<Array<SqlWrapQueryWriteOutput> | SqlWrapQueryWriteOutput>,
-  build: () => SqlWrapQueryBuilder,
+  build: () => _SqlWrapQueryBuilder,
   escape: () => (data: mixed) => mixed,
   escapeId: () => (data: string) => string,
   encodeCursor: (
@@ -94,7 +96,7 @@ export type SqlWrap = {
       | SqlWrapOrderByObject
       | Array<string | SqlWrapOrderByObject>,
     row: Object
-  ) => string,
+  ) => string
 };
 
 const templatedValue = (template: string, ...args: Array<mixed>) =>
@@ -102,10 +104,10 @@ const templatedValue = (template: string, ...args: Array<mixed>) =>
 
 const createSqlWrap = ({
   driver,
-  sqlType,
+  sqlType
 }: {
   driver: SqlWrapConnectionPool | SqlWrapConnection,
-  sqlType: SqlWrapType,
+  sqlType: SqlWrapType
 }) => {
   const self = {};
 
@@ -119,10 +121,10 @@ const createSqlWrap = ({
       .then(conn => createSqlWrap({ driver: conn, sqlType }));
 
   self.release = (): void => {
-    if (driver.release && typeof driver.release === 'function') {
+    if (driver.release && typeof driver.release === "function") {
       driver.release();
     } else {
-      throw new TypeError('release is not a function');
+      throw new TypeError("release is not a function");
     }
   };
 

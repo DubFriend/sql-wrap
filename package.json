@@ -1,6 +1,6 @@
 {
   "name": "sql-wrap",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "description": "Makes working with sql easy",
   "main": "lib/index.js",
   "repository": {
@@ -9,7 +9,9 @@
   },
   "scripts": {
     "prepublish": "gulp build",
-    "test": "gulp test"
+    "test": "gulp test",
+    "init": "docker-compose --file ./deploy/docker-compose.yml stop && docker-compose --file ./deploy/docker-compose.yml rm -f  && docker-compose --file ./deploy/docker-compose.yml build && docker-compose --file ./deploy/docker-compose.yml up -d && docker-compose --file ./deploy/docker-compose.yml logs",
+    "update-install-schema": "bash ./deploy/update-install-schema.sh"
   },
   "author": "Brian Detering",
   "license": "MIT",
