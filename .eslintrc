@@ -4,19 +4,21 @@
   ],
   "env": {
     "node": true,
-    "mocha": true,
-    "es6": true,
+    "mocha": true
   },
   "plugins": [
     "prettier",
     "flowtype"
   ],
   "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 8
+  },
   "rules": {
     "prettier/prettier": ["error", {
       "singleQuote": true,
-      "parser": "flow",
-      "trailingComma": "es5"
+      "trailingComma": "es5",
+      "printWidth": 80
     }],
     "no-dupe-keys": ["error"],
     "no-dupe-args": ["error"],
@@ -32,7 +34,6 @@
     "no-global-assign": ["error"],
     "no-lone-blocks": ["error"],
     "no-throw-literal": ["error"],
-    "no-unused-expressions": ["warn"],
     "no-useless-escape": ["warn"],
     "no-useless-concat": ["error"],
     "vars-on-top": ["error"],

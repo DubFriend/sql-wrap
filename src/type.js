@@ -1,7 +1,6 @@
 // @flow
 
 import type { Readable } from 'stream';
-import type Promise from 'bluebird';
 
 export type SqlWrapType = 'mysql';
 export type SqlWrapOrderByDirection = 'ASC' | 'DESC';

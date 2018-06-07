@@ -6,11 +6,9 @@ declare var beforeEach: any;
 declare var afterEach: any;
 
 import _ from 'lodash';
-import Promise from 'bluebird';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import sinon from 'sinon';
-import { pool, truncateTable, all, clearAllTables, insert } from './sql';
+import { pool, all, clearAllTables, insert } from './sql';
 import stream from 'stream';
 import TemplatedValue from '../templated-value';
 
@@ -91,23 +89,32 @@ describe('index.unit', () => {
 
   describe('insert', () => {
     it('should insert row', () =>
-      index.insert('key', { id: 'a' }).then(() => all('key')).then(rows => {
-        expect(rows).to.deep.equal([{ id: 'a' }]);
-      }));
+      index
+        .insert('key', { id: 'a' })
+        .then(() => all('key'))
+        .then(rows => {
+          expect(rows).to.deep.equal([{ id: 'a' }]);
+        }));
   });
 
   describe('replace', () => {
     it('should replace row', () =>
-      index.replace('key', { id: 'a' }).then(() => all('key')).then(rows => {
-        expect(rows).to.deep.equal([{ id: 'a' }]);
-      }));
+      index
+        .replace('key', { id: 'a' })
+        .then(() => all('key'))
+        .then(rows => {
+          expect(rows).to.deep.equal([{ id: 'a' }]);
+        }));
   });
 
   describe('save', () => {
     it('should save row', () =>
-      index.save('key', { id: 'a' }).then(() => all('key')).then(rows => {
-        expect(rows).to.deep.equal([{ id: 'a' }]);
-      }));
+      index
+        .save('key', { id: 'a' })
+        .then(() => all('key'))
+        .then(rows => {
+          expect(rows).to.deep.equal([{ id: 'a' }]);
+        }));
   });
 
   describe('update', () => {

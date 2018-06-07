@@ -2,8 +2,6 @@
 /* eslint-disable no-unused-expressions */
 declare var describe: any;
 declare var it: any;
-declare var beforeEach: any;
-declare var afterEach: any;
 
 import { expect } from 'chai';
 import TemplatedValue from '../templated-value';

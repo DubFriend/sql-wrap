@@ -1,15 +1,11 @@
 // @flow
-/* eslint-disable no-unused-expressions */
 declare var describe: any;
 declare var it: any;
-declare var beforeEach: any;
-declare var afterEach: any;
+declare var before: any;
 
-import _ from 'lodash';
-import Promise from 'bluebird';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import { pool, truncateTable, all, clearAllTables, insert } from './sql';
+import { pool, clearAllTables, insert } from './sql';
 
 chai.use(chaiAsPromised);
 const { expect } = chai;

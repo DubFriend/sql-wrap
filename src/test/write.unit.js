@@ -3,16 +3,11 @@
 declare var describe: any;
 declare var it: any;
 declare var beforeEach: any;
-declare var afterEach: any;
 
-import _ from 'lodash';
-import Promise from 'bluebird';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import { pool, truncateTable, all, clearAllTables, insert } from './sql';
+import { pool, all, clearAllTables, insert } from './sql';
 import TemplatedValue from '../templated-value';
-
-import squel from 'squel';
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -53,9 +48,12 @@ describe('write.unit', () => {
         }));
 
     it('should handle empty array', () =>
-      write.insert('key', []).then(() => all('key')).then(rows => {
-        expect(rows).to.have.lengthOf(0);
-      }));
+      write
+        .insert('key', [])
+        .then(() => all('key'))
+        .then(rows => {
+          expect(rows).to.have.lengthOf(0);
+        }));
 
     it('should bulk insert', () =>
       write
@@ -222,9 +220,12 @@ describe('write.unit', () => {
         }));
 
     it('should handle empty array', () =>
-      write.save('key', []).then(() => all('key')).then(rows => {
-        expect(rows).to.have.lengthOf(0);
-      }));
+      write
+        .save('key', [])
+        .then(() => all('key'))
+        .then(rows => {
+          expect(rows).to.have.lengthOf(0);
+        }));
 
     it('should bulk save', () =>
       insert('defaultValue', { id: 'A', default: 'foo' })
@@ -314,9 +315,12 @@ describe('write.unit', () => {
         }));
 
     it('should handle empty array', () =>
-      write.replace('key', []).then(() => all('key')).then(rows => {
-        expect(rows).to.have.lengthOf(0);
-      }));
+      write
+        .replace('key', [])
+        .then(() => all('key'))
+        .then(rows => {
+          expect(rows).to.have.lengthOf(0);
+        }));
 
     it('should bulk replace', () =>
       insert('defaultValue', { id: 'A', default: 'foo' })

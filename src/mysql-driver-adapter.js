@@ -1,8 +1,6 @@
 // @flow
 import type { SqlWrapConnectionPool } from './type';
 
-import Promise from 'bluebird';
-
 module.exports = (rawPool: *): SqlWrapConnectionPool => ({
   query: ({
     sql,

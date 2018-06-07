@@ -2,26 +2,17 @@
 
 import type {
   SqlWrapType,
-  SqlWrapQuery,
   SqlWrapConnection,
   SqlWrapConnectionPool,
   SqlWrapInputValues,
-  SqlWrapPagination,
   SqlWrapQueryConfig,
-  SqlWrapQueryStreamConfig,
-  SqlWrapSelectConfig,
-  SqlWrapSelectStreamConfig,
   SqlWrapQueryWriteOutput,
-  SqlWrapOrderByDirection,
   SqlWrapOrderByObject,
-  SqlWrapSerializeField,
-  SqlWrapDeserializeField,
   SqlWrapMappedOrderByObject,
   SqlWrapQueryBuilder,
 } from './type';
 
 import type { Readable } from 'stream';
-import Promise from 'bluebird';
 import _ from 'lodash';
 import squelUnflavored from 'squel';
 import sqlstring from 'sqlstring';
@@ -41,7 +32,8 @@ const mapOrderBy = (
             serialize: v => v,
             deserialize: v => v,
           }
-        : _.chain(o)
+        : _
+            .chain(o)
             .omit('direction')
             .clone()
             .extend({
@@ -106,6 +98,19 @@ module.exports = ({
 
   const stripLimit = sql => sql.replace(/ LIMIT .*/i, '');
 
+  const encodeCursor = (
+    orderBy: Array<SqlWrapMappedOrderByObject>,
+    row: Object
+  ): string =>
+    new Buffer(
+      _
+        .map(
+          orderBy,
+          o => (o.serialize ? o.serialize(row[o.field]) : String(row[o.field]))
+        )
+        .join(CURSOR_DELIMETER)
+    ).toString('base64');
+
   const runCursor = (q, fig) => {
     const orderBy = mapOrderBy(fig.orderBy);
     const isAscending = fig.last && !fig.first ? false : true;
@@ -118,17 +123,17 @@ module.exports = ({
 
     const buildWhereArgs = (values, isGreaterThan) => {
       const build = (values, orderBy, isGreaterThan) => {
-        const sql = _.map(
-          orderBy,
-          (o, i) =>
-            i === values.length - 1
-              ? `${sqlstring.escapeId(o.field)} ${(o.isAscending
-                ? isGreaterThan
-                : !isGreaterThan)
-                  ? '>'
-                  : '<'} ?`
-              : `${sqlstring.escapeId(o.field)} = ?`
-        ).join(' AND ');
+        const sql = _
+          .map(
+            orderBy,
+            (o, i) =>
+              i === values.length - 1
+                ? `${sqlstring.escapeId(o.field)} ${
+                    (o.isAscending ? isGreaterThan : !isGreaterThan) ? '>' : '<'
+                  } ?`
+                : `${sqlstring.escapeId(o.field)} = ?`
+          )
+          .join(' AND ');
 
         let sqls = [sql];
         let mappedValues = [values];
@@ -154,11 +159,13 @@ module.exports = ({
     });
 
     if (fig.after) {
-      q.where.apply(q, buildWhereArgs(decodeCursor(fig.after), true));
+      q.where(...buildWhereArgs(decodeCursor(fig.after), true));
+      // q.where.apply(q, buildWhereArgs(decodeCursor(fig.after), true));
     }
 
     if (fig.before) {
-      q.where.apply(q, buildWhereArgs(decodeCursor(fig.before), false));
+      q.where(...buildWhereArgs(decodeCursor(fig.before), false));
+      // q.where.apply(q, buildWhereArgs(decodeCursor(fig.before), false));
     }
 
     q.limit(isAscending ? fig.first : fig.last);
@@ -218,17 +225,6 @@ module.exports = ({
       });
   };
 
-  const encodeCursor = (
-    orderBy: Array<SqlWrapMappedOrderByObject>,
-    row: Object
-  ): string =>
-    new Buffer(
-      _.map(
-        orderBy,
-        o => (o.serialize ? o.serialize(row[o.field]) : String(row[o.field]))
-      ).join(CURSOR_DELIMETER)
-    ).toString('base64');
-
   self.encodeCursor = (
     orderByRaw:
       | string
@@ -255,9 +251,9 @@ module.exports = ({
     | SqlWrapQueryWriteOutput
     | Array<Object>
     | {
-      results: Array<Object>,
-      resultCount: number,
-    }
+        results: Array<Object>,
+        resultCount: number,
+      }
   > => {
     const {
       sql,

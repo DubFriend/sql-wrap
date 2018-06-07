@@ -1,0 +1,1616 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"starting",
+				"startingPositionTimestamp"
+			],
+			[
+				"variable",
+				"variableName"
+			],
+			[
+				"var",
+				"variableName"
+			],
+			[
+				"start",
+				"startingPosition"
+			],
+			[
+				"key",
+				"keyOrSchema"
+			],
+			[
+				"Itn",
+				"InternalError"
+			],
+			[
+				"Intern",
+				"InternalError"
+			],
+			[
+				"fig",
+				"figOrMessage"
+			],
+			[
+				"status",
+				"statusCode"
+			],
+			[
+				"delete",
+				"deleteLayerIdentity\t(layer.js)"
+			],
+			[
+				"alert",
+				"alertBotChatId"
+			],
+			[
+				"uui",
+				"uuid.v4"
+			],
+			[
+				"displ",
+				"displayName"
+			],
+			[
+				"api",
+				"apiRequest"
+			],
+			[
+				"reque",
+				"requestId"
+			],
+			[
+				"identi",
+				"identities"
+			],
+			[
+				"identit",
+				"identities\t(layer.unit.js)"
+			],
+			[
+				"pick",
+				"pickPublic"
+			],
+			[
+				"compn",
+				"companyName\t(app.js)"
+			],
+			[
+				"display",
+				"display_name"
+			],
+			[
+				"ID",
+				"id"
+			],
+			[
+				"send",
+				"sendAnnouncement"
+			],
+			[
+				"iden",
+				"identityIds"
+			],
+			[
+				"notifi",
+				"notification"
+			],
+			[
+				"senc",
+				"sendAnnouncement"
+			],
+			[
+				"ident",
+				"identityFind"
+			],
+			[
+				"notificat",
+				"notificationTitle"
+			],
+			[
+				"notifica",
+				"notificationBody"
+			],
+			[
+				"isRe",
+				"isRegisteredWithLayer"
+			],
+			[
+				"ignore",
+				"ignoreSuperStatus"
+			],
+			[
+				"subs",
+				"subscribedIdentityIds"
+			],
+			[
+				"alarmEev",
+				"alarmEventRule"
+			],
+			[
+				"alarmEventRule",
+				"alarmEventRuleIds"
+			],
+			[
+				"alarmEvent",
+				"alarmEventTypeId"
+			],
+			[
+				"alarmEventRu",
+				"alarmEventRuleIds"
+			],
+			[
+				"alarmE",
+				"alarmEventTypeId\t(alarm-event.js)"
+			],
+			[
+				"alarme",
+				"alarmEventRuleId"
+			],
+			[
+				"alarmEven",
+				"alarmEventRuleId"
+			],
+			[
+				"get",
+				"getTriggeredRulesForTripScoreEvent\t(alarm-event-rule.js)"
+			],
+			[
+				"alarm",
+				"alarmEventId"
+			],
+			[
+				"Alarm",
+				"AlarmEventTypeId"
+			],
+			[
+				"AlarmEven",
+				"AlarmEventId\t(type.js)"
+			],
+			[
+				"create",
+				"createEventRow"
+			],
+			[
+				"TripScore",
+				"TripScoreInput\t(trip-score.js)"
+			],
+			[
+				"SMAR",
+				"SMART_WITNESS_URL\t(smart-witness-video.js)"
+			],
+			[
+				"smart-wit",
+				"smart-witness-video"
+			],
+			[
+				"Smart",
+				"SmartWitnessVideoModel"
+			],
+			[
+				"telem",
+				"telematicsEvent"
+			],
+			[
+				"orgWhere",
+				"orgWhereIdentityStub"
+			],
+			[
+				"identityFin",
+				"identityFindStub"
+			],
+			[
+				"reje",
+				"rejectedWith\t(org.unit.js)"
+			],
+			[
+				"client",
+				"clientConfigId"
+			],
+			[
+				"clien",
+				"clientConfigId"
+			],
+			[
+				"idne",
+				"identityId"
+			],
+			[
+				"Iden",
+				"IdentityId\t(org.js)"
+			],
+			[
+				"where",
+				"whereIdentity"
+			],
+			[
+				"orgWhereUser",
+				"orgWhereUserStub"
+			],
+			[
+				"orgWhereU",
+				"orgWhereUserStub"
+			],
+			[
+				"invit",
+				"invitingUserId"
+			],
+			[
+				"contact",
+				"contactPhone"
+			],
+			[
+				"contac",
+				"contactName"
+			],
+			[
+				"Pagin",
+				"PaginationOrderByDirection"
+			],
+			[
+				"results",
+				"resultsPerPage"
+			],
+			[
+				"data",
+				"dataloader"
+			],
+			[
+				"result",
+				"resultsPerPage\t(alarm-event-rule.js)"
+			],
+			[
+				"expe",
+				"expectedRuleData"
+			],
+			[
+				"alarmEventRuleS",
+				"alarmEventRuleSearchStub"
+			],
+			[
+				"findB",
+				"findByEmail"
+			],
+			[
+				"alarm-event-ru",
+				"alarm-event-rule-subscription"
+			],
+			[
+				"alarm-event",
+				"alarm-event-rule"
+			],
+			[
+				"loca",
+				"locationFromAddress"
+			],
+			[
+				"identityClaimEmail",
+				"identityClaimEmailInstruction1\t(en.json)"
+			],
+			[
+				"l",
+				"localization"
+			],
+			[
+				"alertEmail",
+				"alertEmailDetailsHeader\t(en.json)"
+			],
+			[
+				"alarmEv",
+				"alarmEventInputSchema"
+			],
+			[
+				"publ",
+				"publishAlarmEvent\t(queue.js)"
+			],
+			[
+				"queue",
+				"queuePublishAlarmEventStub"
+			],
+			[
+				"inser",
+				"insertId"
+			],
+			[
+				"alertEve",
+				"alertEventRuleData"
+			],
+			[
+				"alarmEve",
+				"alarmEventRuleSubscription"
+			],
+			[
+				"G",
+				"GroupModel"
+			],
+			[
+				"alar",
+				"alarmEventRuleSubscription"
+			],
+			[
+				"alarmEventR",
+				"alarmEventRuleSubscription"
+			],
+			[
+				"createAlarmEve",
+				"createAlarmEventRule"
+			],
+			[
+				"createAlarm",
+				"createAlarmEventRuleSubscription"
+			],
+			[
+				"AlarmEvet",
+				"AlarmEventRuleSubscriptionKey"
+			],
+			[
+				"AlarmEventRuleSub",
+				"AlarmEventRuleSubscriptionModel\t(alarm-event-rule-subscription.js)"
+			],
+			[
+				"AlarmEvent",
+				"AlarmEventRuleSubscriptionKey"
+			],
+			[
+				"proper",
+				"properties"
+			],
+			[
+				"alarmEventRul",
+				"alarmEventRuleSubscription"
+			],
+			[
+				"AlarmEventSu",
+				"AlarmEventRuleSubscriptionRow"
+			],
+			[
+				"g",
+				"groupId"
+			],
+			[
+				"isEn",
+				"isEnabled\t(test-register.js)"
+			],
+			[
+				"isSuper",
+				"isSuperRequired\t(test-register.js)"
+			],
+			[
+				"acc",
+				"accessToken"
+			],
+			[
+				"testR",
+				"testRegister"
+			],
+			[
+				"tripScoreK",
+				"tripScoreKeyId"
+			],
+			[
+				"by",
+				"byAlarmEventRuleIdLoader"
+			],
+			[
+				"current",
+				"currentPage"
+			],
+			[
+				"clear",
+				"clearTables"
+			],
+			[
+				"tripScore",
+				"tripScoreKey\t(RELEASE.md)"
+			],
+			[
+				"rejec",
+				"rejectedWith"
+			],
+			[
+				"before",
+				"beforeEach"
+			],
+			[
+				"AlarmEventRul",
+				"AlarmEventRuleRow"
+			],
+			[
+				"Paginat",
+				"PaginationResults\t(flow-type.js)"
+			],
+			[
+				"isAct",
+				"isActiveDriver"
+			],
+			[
+				"alarm-ev",
+				"alarm-event-rule\t(alarm-event-rule.unit.js)"
+			],
+			[
+				"AlarmEventRuleCond",
+				"AlarmEventRuleConditionTripScoreModel\t(alarm-event-rule.js)"
+			],
+			[
+				"createAlarmE",
+				"createAlarmEventRuleConditionTripScore"
+			],
+			[
+				"alarm-even",
+				"alarm-event-rule-condition-trip-score\t(alarm-event-rule.js)"
+			],
+			[
+				"tripF",
+				"tripFindStub"
+			],
+			[
+				"hookEvent",
+				"hookEventArgs"
+			],
+			[
+				"hookEven",
+				"hookEventArgs"
+			],
+			[
+				"hook",
+				"hookEventTypeId\t(telematics-event.unit.js)"
+			],
+			[
+				"alarmEventType",
+				"alarmEventTypeId"
+			],
+			[
+				"condition",
+				"conditionTripScore"
+			],
+			[
+				"condi",
+				"conditionTripScore"
+			],
+			[
+				"AlarmEventRuleCon",
+				"AlarmEventRuleConditionTripScoreModel"
+			],
+			[
+				"tripScoreFiel",
+				"tripScoreFieldMinimumThreshold"
+			],
+			[
+				"alarmEventT",
+				"alarmEventTypeId\t(2018.04.23-alarm-event-trip-score.sql)"
+			],
+			[
+				"AlarmE",
+				"AlarmEventTypeId\t(alarm-event.js)"
+			],
+			[
+				"reject",
+				"rejectedWith\t(alarm-event.unit.js)"
+			],
+			[
+				"alarmeE",
+				"alarmEventRuleConditionTripScore"
+			],
+			[
+				"tripScoreFie",
+				"tripScoreFieldId\t(2018.04.23-alarm-event-trip-score.sql)"
+			],
+			[
+				"strin",
+				"stringify\t(geo-fence.js)"
+			],
+			[
+				"dev",
+				"deviceConfiguration\t(RELEASE.md)"
+			],
+			[
+				"wher",
+				"whereIdentity\t(client-config.js)"
+			],
+			[
+				"gatewa",
+				"gatewayModuleId\t(client-config.unit.js)"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "sql-wrap.sublime-project",
+			"settings":
+			{
+				"buffer_size": 414,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "package.json",
+			"settings":
+			{
+				"buffer_size": 1647,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "src/query.js",
+			"settings":
+			{
+				"buffer_size": 11000,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": ".eslintrc",
+			"settings":
+			{
+				"buffer_size": 1409,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": ".prettierrc",
+			"settings":
+			{
+				"buffer_size": 154,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"setting",
+				"Preferences: Settings"
+			],
+			[
+				"prefer",
+				"Preferences: Package Control Settings – User"
+			],
+			[
+				"prettier",
+				"Preferences: JsPrettier Settings - User"
+			],
+			[
+				"list",
+				"Package Control: List Packages"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"flow",
+				"Flow"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"jspre",
+				"Preferences: JsPrettier Settings - Default"
+			]
+		],
+		"width": 428.0
+	},
+	"console":
+	{
+		"height": 672.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/brian/tourmaline/sql-wrap",
+		"/Users/brian/tourmaline/sql-wrap/src"
+	],
+	"file_history":
+	[
+		"/Users/brian/tourmaline/served/src/test/auth-token.unit.js",
+		"/Users/brian/tourmaline/served/src/test/auth-password.unit.js",
+		"/Users/brian/tourmaline/served/src/logging/error.js",
+		"/Users/brian/tourmaline/served/src/logging/attach.js",
+		"/Users/brian/tourmaline/served/src/kinesis/kinesis.js",
+		"/Users/brian/tourmaline/served/src/ec2/instance-metadata.js",
+		"/Users/brian/tourmaline/served/src/index.js",
+		"/Users/brian/tourmaline/served/src/dynamo/dynamo-db.js",
+		"/Users/brian/tourmaline/served/src/test/error.unit.js",
+		"/Users/brian/tourmaline/served/package.json",
+		"/Users/brian/tourmaline/served/.gitignore",
+		"/Users/brian/tourmaline/served/served.sublime-project",
+		"/Users/brian/tourmaline/betterways-backend/mysql-schema/migration/2018.05.08-app-layer-user.sql",
+		"/Users/brian/tourmaline/betterways-backend/src/model/alarm-event.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/alarm-event-notifier.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/test/layer.unit.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/app.js",
+		"/Users/brian/tourmaline/betterways-backend/src/test/identity.spec.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/alarm-event-rule.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/alarm-event-rule-subscription.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/layer.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/trip-score.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/lib/test-register.js",
+		"/Users/brian/tourmaline/betterways-backend/.env",
+		"/Users/brian/tourmaline/betterways-backend/scripts/test-local-script-harness.js",
+		"/Users/brian/tourmaline/betterways-backend/scripts/generate-layer-announcement-bot.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/factory.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/trip.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/test/trip.unit.js",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/trip-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/src/flow-type.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/group.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/org.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/can.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/test/trip-score.unit.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/test/alarm-event.unit.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/test/alarm-event-rule.unit.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/test/alarm-event-rule-subscription.unit.js",
+		"/Users/brian/tourmaline/betterways-backend/src/queue.js",
+		"/Users/brian/tourmaline/betterways-backend/src/type.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/identity.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/theme.js",
+		"/Users/brian/tourmaline/betterways-backend/betterways-backend.sublime-project",
+		"/Users/brian/tourmaline/betterways-backend/.gitignore",
+		"/Users/brian/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/brian/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/Users/brian/Library/Application Support/Sublime Text 3/Packages/User/Package Control.sublime-settings",
+		"/Users/brian/Library/Application Support/Sublime Text 3/Packages/User/JsPrettier.sublime-settings",
+		"/Users/brian/tourmaline/betterways-backend/mysql-schema/migration/staged/../archive/2018.05.04-client-config-org.sql",
+		"/Users/brian/tourmaline/betterways-backend/src/model/test/org.unit.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/trip-vehicle-personal.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/smart-witness-video.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/client-config.js",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/client-config-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/org-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/test/smart-witness-video.unit.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/fleet-history.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/test/trip-vehicle-personal.unit.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/test/client-config.unit.js",
+		"/Users/brian/tourmaline/betterways-backend/src/test/client-config.spec.js",
+		"/Users/brian/tourmaline/betterways-backend/RELEASE.md",
+		"/Users/brian/tourmaline/betterways-backend/src/model/telematics-event.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/base-telematics-event.js",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/telematics-event-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/mysql-schema/migration/2018.05.04-client-config-org.sql",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/telematics-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/location-write.js",
+		"/Users/brian/tourmaline/betterways-backend/package.json",
+		"/Users/brian/tourmaline/betterways-backend/src/model/gateway-module.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/lib/test-data.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/alarm-event-rule-condition-trip-score.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/language-template/en.json",
+		"/Users/brian/tourmaline/betterways-backend/src/scripts/inactive/compare-new-data.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/test/alert.unit.js",
+		"/Users/brian/tourmaline/betterways-backend/src/test/alert.spec.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/alert.js",
+		"/Users/brian/tourmaline/betterways-backend/node_modules/served/build/logging/attach.js",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/alert-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/node_modules/served/src/logging/attach.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/onboard.js",
+		"/Users/brian/tourmaline/betterways-backend/src/lib/bw-client.js",
+		"/Users/brian/tourmaline/betterways-backend/src/lib/test/bw-client.unit.js",
+		"/Users/brian/tourmaline/betterways-backend/src/test/trip.spec.js",
+		"/Users/brian/tourmaline/betterways-backend/src/test/shareable-page.spec.js",
+		"/Users/brian/tourmaline/betterways-backend/src/test/scheduled-report.spec.js",
+		"/Users/brian/tourmaline/betterways-backend/src/test/reseller.spec.js",
+		"/Users/brian/tourmaline/betterways-backend/src/test/org.spec.js",
+		"/Users/brian/tourmaline/betterways-backend/src/test/group.spec.js",
+		"/Users/brian/tourmaline/betterways-backend/src/test/group-invite-token.spec.js",
+		"/Users/brian/tourmaline/betterways-backend/src/test/group-consumer.spec.js",
+		"/Users/brian/tourmaline/betterways-backend/src/test/app.spec.js",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/timeline-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/score-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/scheduled-report-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/location-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/identity-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/group-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/group-consumer-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/gateway-module-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/consumer-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/app-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/src/onboard/aware-360/install-drivers.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/test/gateway-module.unit.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/vinli.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/trip-write.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/reseller.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/reseller-group.js",
+		"/Users/brian/tourmaline/betterways-backend/src/artillery/generate.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/can-reseller.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/demoize.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/driving-feedback.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/geo.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/group-consumer-base.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/group-consumer-pending.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/group-user-pending.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/identity-field.js",
+		"/Users/brian/tourmaline/betterways-backend/src/routes/device-routes.js",
+		"/Users/brian/tourmaline/betterways-backend/src/model/device.js",
+		"/Users/brian/tourmaline/betterways-backend/src/test/group-user.spec.js",
+		"/Users/brian/tourmaline/betterways-backend/documentation/internationalization.md",
+		"/Users/brian/tourmaline/betterways-backend/gruntfile.js",
+		"/Users/brian/tourmaline/betterways-backend/scripts/post-hook.js",
+		"/Users/brian/tourmaline/betterways-backend/scripts/repair-missing-collections.js",
+		"/Users/brian/tourmaline/betterways-backend/scripts/trip-geojson-format.js",
+		"/Users/brian/tourmaline/betterways-backend/src/route.js",
+		"/Users/brian/tourmaline/betterways-backend/src/server.js",
+		"/Users/brian/tourmaline/betterways-backend/src/worker.js",
+		"/Users/brian/tourmaline/betterways-backend/src/artillery/hooks.js"
+	],
+	"find":
+	{
+		"height": 28.0
+	},
+	"find_in_files":
+	{
+		"height": 1150.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "sql-wrap.sublime-project",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 414,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								168,
+								168
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "package.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1647,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								795,
+								795
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/query.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 11000,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								125,
+								125
+							]
+						],
+						"settings":
+						{
+							"SL.188.region_keys":
+							[
+								"SL.eslint.Highlights.|e29ae963a82343a6d3df1453086b1a1362f47c8f6d817e22f8f4a01b0811634f|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|24301154a7a69d12ac3cc4887b0d648e3299ee29bf8f90373e1dca13c42436bd|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|afe04c7a925b90999d74497caad506377a6099ddd3aa03b0d978e23f57e30c81|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|36b2b711356b356bf3964a0ec63f35155284946e400a48e28461f6550f44aa72|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|9cbe254446430d427c8d375fa78971bbb3ee6a608c7d6a97c0086e5446e05c12|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|cb95d84e7e7e10d69b3095d6848f3befe979d32227d4c59a89eeb4b2aaab5257|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|211be17b6c1bd618f7ecea93a3cc828d76f082edee1b3c679cb99d7292bdd36d|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|0460361ddc77397729cdeee685c7101edd827679c48b59f0302fd61e7fd5fae0|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|37f562653e329e478f6233d346c0f5f0f9289b2a5d4d3d0570e0e23d79f10d00|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|75967c89662484aa19dadada2604fe08ec0404b63b581acaf4259f7fe3459b0e|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|df90b4081b3264654009f1aec5e19db2e63712b6486e82c61df81a4761f9b140|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|c397dd7976eed28c5d4ca3db9f377c7a6351283e42d56c9cef1bace6a268713d|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|a92046a1feace3b1f1a4fd6da2825df81fa88c00580dec4827e2b2095826e791|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|8cfeeea2e76ebab310f000f3921df054d9e58a584cb39f0c323c67f19ea756ea|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|e45e8d08c4ee44d240d22121ede0d2e7061d3e2d765c6444f009d97e38e3925c|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|bbc0bc1e3d8fc9800c24467f2a82031866740c11cd171e3337a6e49a0e0df3fa|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|2c1dadcfb4b9c85a73c500e3ce7141f58c44be78b2f3db36480da2fb46221206|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|9bb8401ace504afed8738288a2dc6ffbc60d1343f4feb35037a535ac626ec6e2|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|3830fbb404d8c14b9c446f488ee47fe82e491c10f338e8e24e4ac549e37519db|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|bb944af7e4079269cbd82e8ef61f27da40a585956068c30374ced3c3c48ec2bc|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|8cb6d1a6bde368ea8d2dadad9b8f304ac7d22b9b26dc535375f2609247ef56ba|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|cd97753bda08b5d98ada74f7f75dd1377a20698cf4ac8b0c05f55785b90eed54|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|329094967c10bc6c39a1906d70719f92c7bcdbdfaaeff8a653d2a3ebbf6105aa|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|054ef2244bede408d464748a207c31c672c5013f2fcca44ce1a040dea15ee20d|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|76a6358a2d7235b7d093a3f0be0c997ee7269ddb919f768d3caa53c3197fc741|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|90189fc07a9f9d0a2b62df4d9c988cdf0dbab7cafa7e42291550c56f6616ed09|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|0adcaea9479088c128abdc4cfa1daadc5fd5cb2f3c7d06c744184e34a3cc798e|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|0e3c841ae2ce3aeca59c4cde008e560268727f5ab719b21e717fc186ccbda133|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|0094055bc6fe0405dbdf50b7401552525d67c5d2b9203702ad57bc6eb4982e1b|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|76f25b98ad6bc02dbce3934d6ee7df7aebacb8b84ffe56aab9d4951bef44e04c|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|ca18f8a255babb5efaad72ff67e509e167d88a9e5157620e733acf64d67c037f|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|2351d252d380ca26ad81b96f48e2a6acfc431f4271631e32e98ffbeabce3d831|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|73c932eef514f54963f4fc753a0468c8e4a751c54a387db2ab37a8ad9d9f2010|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|d85572593dafc468e29d8a80fe7f6f6fc5a28fb04462893f93d9cfb3379eb8c1|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|ff3c619ea4d2e117ff65a8fbffb0bd3bd240e1471bc1c62d10fdf4e5eda7b728|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|a7d2a938529b51ab70b985b9b03e8d6630f42c470498273d45b39727a6928f41|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Gutter.|region.redish markup.error.sublime_linter|dot",
+								"SL.eslint.Highlights.|5c1e8922a7633c08d8c20defd5bef8a03f11ef66c9ba295bc427f5ee3289d268|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|6015cad5f1461852a2182feedc7bd89eebf490f2ddf82047e7b4fbbc20c7852e|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|14784f175ae210c13a3bfd8e08f174e74023a6c3be7cd665a9e6ea3755e9615f|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|88b0209157e1be5639791107fa26b9cbf5b9422331336b443947def3b6041250|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|61f619164ee2c95ade58ad15de371f6eed0af4af72feb1d60dad389f8cbfafb8|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|77b8c9f115cb43416007889384cc40aa6c8225b5a151ba9c7725a9231ca33c83|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|b8ec6bbaa17112c2a118697cab70a9a2f1fdc9dd40b885cdd9c605540358fd5c|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|818b25112d0632b4422a084bb5516ae7008e8725981fa72caf9fb9657c46af4b|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|8a5b3fff387b1dbc9aca62caf65fc31ea84f9e7a3e82a715084481c918fdce92|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|bdc93d9eecc0eda11c4eed0b08b018d8a02a9fb50baf9ca29483959cc438a992|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|98ea95e9640c1506e91d33e50dca1a530cabddff23a9af3f1215c9012c72e369|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|47e88d545ccf84be0a070a7c33eb3cee838f5b0658ca2b0f0e8d5560935f3074|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|0cf423dbd544a6156858997d4d6754bd75083f3939559a7018bf1279a6efa679|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|a643c9ef019240aa1c100e343bccdb38a1d240cbfc9a2d4ae6fec49a3ba5f814|region.redish markup.error.sublime_linter|32",
+								"sublime_linter.protected_regions",
+								"SL.eslint.Highlights.|0c4d0385d99bcf5118251c7a29434d53b0964a3cf1e3c04bafcf77c70929a8e2|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|6ab190173d7e731df98285ede8db1b6bde47ff99f9c29e14e7f73c32a355057d|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|25adec0654adb203ab98899df056bdd68a8a07d74386a3df2ad046265882674a|region.redish markup.error.sublime_linter|32",
+								"SL.eslint.Highlights.|7198000152577ce3e393e746c158c1dcbf3782ad12fa2a77e619b5b5586b8721|region.redish markup.error.sublime_linter|32"
+							],
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": ".eslintrc",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1409,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								119,
+								119
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": ".prettierrc",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 154,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								25,
+								36
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 28.0
+	},
+	"input":
+	{
+		"height": 51.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.SublimeLinter":
+	{
+		"height": 0.0
+	},
+	"output.SublimeLinter Messages":
+	{
+		"height": 517.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "sql-wrap.sublime-project",
+	"replace":
+	{
+		"height": 52.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"pack",
+				"package.json"
+			],
+			[
+				"ind",
+				"src/index.js"
+			],
+			[
+				"type.js",
+				"src/type/type.js"
+			],
+			[
+				"auth/tok",
+				"src/auth/token.js"
+			],
+			[
+				"grunt",
+				"gruntfile.js"
+			],
+			[
+				"type",
+				"src/type/type.js"
+			],
+			[
+				"config.uni",
+				"src/test/config.unit.js"
+			],
+			[
+				"aws-depl",
+				"src/aws-deploy/aws-deploy.js"
+			],
+			[
+				"s3",
+				"src/s3/s3.js"
+			],
+			[
+				"confi.js",
+				"src/config/config.js"
+			],
+			[
+				"inde",
+				"src/index.js"
+			],
+			[
+				"dynam",
+				"src/dynamo/dynamo-db.js"
+			],
+			[
+				"instan",
+				"src/ec2/instance-metadata.js"
+			],
+			[
+				"kine",
+				"src/kinesis/kinesis.js"
+			],
+			[
+				"atta",
+				"src/logging/attach.js"
+			],
+			[
+				"loggin/error",
+				"src/logging/error.js"
+			],
+			[
+				"auth-pa",
+				"src/test/auth-password.unit.js"
+			],
+			[
+				"auth-tok",
+				"src/test/auth-token.unit.js"
+			],
+			[
+				"datalo.uni",
+				"src/test/dataloader.unit.js"
+			],
+			[
+				"error.uni",
+				"src/test/error.unit.js"
+			],
+			[
+				"error",
+				"src/logging/error.js"
+			],
+			[
+				"layer.js",
+				"src/model/layer.js"
+			],
+			[
+				".env",
+				".env"
+			],
+			[
+				"fac",
+				"src/model/factory.js"
+			],
+			[
+				"layer.uni",
+				"src/model/test/layer.unit.js"
+			],
+			[
+				"trip.uni",
+				"src/model/test/trip.unit.js"
+			],
+			[
+				"trip.js",
+				"src/model/trip.js"
+			],
+			[
+				"trip-rou",
+				"src/routes/trip-routes.js"
+			],
+			[
+				"trip-score",
+				"src/model/trip-score.js"
+			],
+			[
+				"app",
+				"src/model/app.js"
+			],
+			[
+				"flow",
+				"src/flow-type.js"
+			],
+			[
+				".en",
+				".env"
+			],
+			[
+				"trip",
+				"src/model/trip.js"
+			],
+			[
+				"iden.sp",
+				"src/test/identity.spec.js"
+			],
+			[
+				"can.js",
+				"src/model/can.js"
+			],
+			[
+				"org.js",
+				"src/model/org.js"
+			],
+			[
+				"group",
+				"src/model/group.js"
+			],
+			[
+				"flow-ty",
+				"src/flow-type.js"
+			],
+			[
+				"layer",
+				"src/model/layer.js"
+			],
+			[
+				"alarm-even-rul-su.uni",
+				"src/model/test/alarm-event-rule-subscription.unit.js"
+			],
+			[
+				"alarm-even",
+				"src/model/alarm-event-rule-subscription.js"
+			],
+			[
+				"alar-eve",
+				"src/model/test/alarm-event-rule.unit.js"
+			],
+			[
+				"iden",
+				"src/model/identity.js"
+			],
+			[
+				"test-re",
+				"src/model/lib/test-register.js"
+			],
+			[
+				"trip-sco.uni",
+				"src/model/test/trip-score.unit.js"
+			],
+			[
+				"queue",
+				"src/queue.js"
+			],
+			[
+				"alarm-even.uni",
+				"src/model/test/alarm-event.unit.js"
+			],
+			[
+				"alarm",
+				"src/model/alarm-event.js"
+			],
+			[
+				"theme",
+				"src/model/theme.js"
+			],
+			[
+				"org-user.uni",
+				"src/model/test/org-user.unit.js"
+			],
+			[
+				"test/org-user-base",
+				"src/model/test/org-user-base.js"
+			],
+			[
+				"org-user",
+				"src/model/org-user-base.js"
+			],
+			[
+				"trip-vehi",
+				"src/model/trip-vehicle-personal.js"
+			],
+			[
+				"trip-vehic-per.uni",
+				"src/model/test/trip-vehicle-personal.unit.js"
+			],
+			[
+				"fleet",
+				"src/model/fleet-history.js"
+			],
+			[
+				"smart",
+				"src/model/smart-witness-video.js"
+			],
+			[
+				"smar",
+				"src/model/smart-witness-video.js"
+			],
+			[
+				"rele",
+				"RELEASE.md"
+			],
+			[
+				"org.uni",
+				"src/model/test/org.unit.js"
+			],
+			[
+				"org-rou",
+				"src/routes/org-routes.js"
+			],
+			[
+				"facty",
+				"src/model/factory.js"
+			],
+			[
+				"client-con.sp",
+				"src/test/client-config.spec.js"
+			],
+			[
+				"client-con",
+				"src/routes/client-config-routes.js"
+			],
+			[
+				"fact",
+				"src/model/factory.js"
+			],
+			[
+				"client-confi.uni",
+				"src/model/test/client-config.unit.js"
+			],
+			[
+				"telematics-even",
+				"src/model/telematics-event.js"
+			],
+			[
+				"base-telem",
+				"src/model/base-telematics-event.js"
+			],
+			[
+				"telem-even",
+				"src/model/telematics-event.js"
+			],
+			[
+				"tele-rou",
+				"src/routes/telematics-routes.js"
+			],
+			[
+				"location-wri",
+				"src/model/location-write.js"
+			],
+			[
+				"smart-witness",
+				"src/model/smart-witness-video.js"
+			],
+			[
+				"flo",
+				"src/flow-type.js"
+			],
+			[
+				"org",
+				"src/model/org.js"
+			],
+			[
+				"client-config.uni",
+				"src/model/test/client-config.unit.js"
+			],
+			[
+				"client",
+				"src/model/client-config.js"
+			],
+			[
+				"client-co",
+				"src/routes/client-config-routes.js"
+			],
+			[
+				"clien",
+				"src/test/client-config.spec.js"
+			],
+			[
+				"gateway-module",
+				"src/model/gateway-module.js"
+			],
+			[
+				"test-da",
+				"src/model/lib/test-data.js"
+			],
+			[
+				"alarm-event-rule.uni",
+				"src/model/test/alarm-event-rule.unit.js"
+			],
+			[
+				"trip-sc",
+				"src/model/trip-score.js"
+			],
+			[
+				"alarm-even-rul.uni",
+				"src/model/test/alarm-event-rule.unit.js"
+			],
+			[
+				"alert.unit",
+				"src/model/test/alert.unit.js"
+			],
+			[
+				"alert.js",
+				"src/model/alert.js"
+			],
+			[
+				"alert-r",
+				"src/routes/alert-routes.js"
+			],
+			[
+				"alert.sp",
+				"src/test/alert.spec.js"
+			],
+			[
+				"alert.",
+				"src/model/alert.js"
+			],
+			[
+				"bw-cli",
+				"src/lib/bw-client.js"
+			],
+			[
+				"bw-cl.uni",
+				"src/lib/test/bw-client.unit.js"
+			],
+			[
+				"trip-ve.uni",
+				"src/model/test/trip-vehicle-personal.unit.js"
+			],
+			[
+				"onb",
+				"src/model/onboard.js"
+			],
+			[
+				"onboar",
+				"src/model/onboard.js"
+			],
+			[
+				"tripw",
+				"src/model/trip-write.js"
+			],
+			[
+				"trip-ro",
+				"src/routes/trip-routes.js"
+			],
+			[
+				"device",
+				"src/model/device.js"
+			],
+			[
+				"app.js",
+				"src/model/app.js"
+			],
+			[
+				"alarm-eve",
+				"src/model/alarm-event-rule.js"
+			],
+			[
+				"consumer",
+				"src/routes/consumer-routes.js"
+			],
+			[
+				"iden-r",
+				"src/routes/identity-routes.js"
+			],
+			[
+				"iden-rou",
+				"src/routes/identity-routes.js"
+			],
+			[
+				"telem",
+				"src/model/telematics-event.js"
+			],
+			[
+				"server",
+				"src/server.js"
+			],
+			[
+				"trip-sco",
+				"src/model/trip-score.js"
+			],
+			[
+				"templ",
+				"cloud-formation/template.json"
+			],
+			[
+				"proc",
+				"cloud-formation/process-template.js"
+			],
+			[
+				"lambda/ind",
+				"src/lambda/index.js"
+			],
+			[
+				"proce",
+				"cloud-formation/process-template.js"
+			],
+			[
+				"geocod",
+				"src/model/test/geocoding.unit.js"
+			],
+			[
+				"pret",
+				".prettierrc"
+			],
+			[
+				"local",
+				"src/model/localization.js"
+			],
+			[
+				"mail",
+				"src/model/mail-template.js"
+			],
+			[
+				"trip-r",
+				"src/routes/trip-routes.js"
+			],
+			[
+				"kines",
+				"src/model/kinesis-grouper.js"
+			],
+			[
+				"trip-wri",
+				"src/model/trip-write.js"
+			],
+			[
+				"aws",
+				"aws-deploy.js"
+			],
+			[
+				"template",
+				"cloud-formation/template.json"
+			],
+			[
+				"trip-score.uni",
+				"src/model/test/trip-score.unit.js"
+			],
+			[
+				"tele-proc",
+				"src/model/telematics-processor.js"
+			],
+			[
+				"kines-",
+				"src/model/kinesis-grouper.js"
+			],
+			[
+				"trip-wr",
+				"src/model/trip-write.js"
+			],
+			[
+				"org.j",
+				"src/model/org.js"
+			],
+			[
+				"p",
+				"package.json"
+			],
+			[
+				"type.",
+				"src/type.js"
+			],
+			[
+				"alarm-eve-rul.uni",
+				"src/model/test/alarm-event-rule.unit.js"
+			],
+			[
+				"alarm-eve.uni",
+				"src/model/test/alarm-event.unit.js"
+			],
+			[
+				"expo",
+				"mysql-schema/export.sh"
+			],
+			[
+				"gru",
+				"gruntfile.js"
+			],
+			[
+				"instal",
+				"mysql-schema/install.sql"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 331.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

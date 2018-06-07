@@ -1,23 +1,12 @@
 // @flow
-
 import type {
   SqlWrapType,
-  SqlWrapQuery,
   SqlWrapConnection,
   SqlWrapConnectionPool,
-  SqlWrapInputValues,
-  SqlWrapPagination,
-  SqlWrapQueryConfig,
-  SqlWrapQueryStreamConfig,
-  SqlWrapSelectConfig,
-  SqlWrapSelectStreamConfig,
   SqlWrapQueryWriteOutput,
 } from './type';
-
-import Promise from 'bluebird';
 import _ from 'lodash';
 import createQuery from './query';
-import squel from 'squel';
 import sqlstring from 'sqlstring';
 import TemplatedValue from './templated-value';
 
@@ -36,7 +25,8 @@ module.exports = ({
     Array.isArray(d)
       ? _.map(d, prepareWriteData)
       : d &&
-        _.chain(d)
+        _
+          .chain(d)
           .omitBy(_.isUndefined)
           .mapKeys((v, k) => sqlstring.escapeId(k))
           .value();
@@ -65,7 +55,7 @@ module.exports = ({
             }
           });
         } else {
-          _.each(row, (v, k) => {
+          _.each(row, v => {
             if (v instanceof TemplatedValue) {
               rowOfPlaceholders.push(v.template);
               values = values.concat(v.arguments);
@@ -83,25 +73,31 @@ module.exports = ({
     );
 
   const buildWriteQuery = ({ operation, table, rows }) => {
-    const columns = _.chain(rows).first().keys().value();
+    const columns = _
+      .chain(rows)
+      .first()
+      .keys()
+      .value();
     const { placeholders, values } = reduceRowsIntoPlaceholdersAndValues({
       columns,
       rows,
     });
     return {
-      text: `${operation} INTO ${sqlstring.escapeId(table)} (${_.map(
-        columns,
-        c => c
-      ).join(', ')}) VALUES ${_.map(
-        placeholders,
-        row => `(${row.join(', ')})`
-      ).join(', ')}`,
+      text: `${operation} INTO ${sqlstring.escapeId(table)} (${_
+        .map(columns, c => c)
+        .join(', ')}) VALUES ${_
+        .map(placeholders, row => `(${row.join(', ')})`)
+        .join(', ')}`,
       values,
     };
   };
 
   const keyByColumns = (fig: *): string =>
-    _.chain(fig).map((v, k) => k).sort().join(':');
+    _
+      .chain(fig)
+      .map((v, k) => k)
+      .sort()
+      .join(':');
 
   self.insert = (
     table: string,
@@ -111,7 +107,7 @@ module.exports = ({
       Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows]
     );
 
-    if (rows.length) {
+    if (rows && rows.length) {
       const grouped = {};
       _.each(rows, r => {
         const key = keyByColumns(r);
@@ -146,7 +142,7 @@ module.exports = ({
       Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows]
     );
 
-    if (rows.length) {
+    if (rows && rows.length) {
       const grouped = {};
       _.each(rows, r => {
         const key = keyByColumns(r);
@@ -208,17 +204,20 @@ module.exports = ({
       });
 
       return {
-        text: `UPDATE ${sqlstring.escapeId(table)} SET ${_.map(
-          update.update,
-          (v, k) => `${k} = ${v instanceof TemplatedValue ? v.template : '?'}`
-        ).join(', ')} ${update.where ? 'WHERE' : ''} ${_.map(
-          update.where,
-          (v, k: string) =>
-            `${k} ${Array.isArray(v) ? 'IN' : '='} (${v instanceof
-            TemplatedValue
-              ? v.template
-              : '?'})`
-        ).join(' AND ')}`,
+        text: `UPDATE ${sqlstring.escapeId(table)} SET ${_
+          .map(
+            update.update,
+            (v, k) => `${k} = ${v instanceof TemplatedValue ? v.template : '?'}`
+          )
+          .join(', ')} ${update.where ? 'WHERE' : ''} ${_
+          .map(
+            update.where,
+            (v, k: string) =>
+              `${k} ${Array.isArray(v) ? 'IN' : '='} (${
+                v instanceof TemplatedValue ? v.template : '?'
+              })`
+          )
+          .join(' AND ')}`,
         values,
       };
     };
@@ -229,19 +228,26 @@ module.exports = ({
 
     return driver.query({
       sql: _.map(queries, ({ text }) => text).join(';\n'),
-      values: _.chain(queries).map(({ values }) => values).flatten().value(),
+      values: _
+        .chain(queries)
+        .map(({ values }) => values)
+        .flatten()
+        .value(),
     });
   };
 
   self.delete = (
     table: string,
     where?: Object | Array<Object>
-  ): Promise<SqlWrapQueryWriteOutput> => {
+  ): Promise<SqlWrapQueryWriteOutput | void> => {
     if (Array.isArray(where) && !where.length) {
       return Promise.resolve();
     }
 
-    const q = query.build().delete().from(sqlstring.escapeId(table));
+    const q = query
+      .build()
+      .delete()
+      .from(sqlstring.escapeId(table));
     if (where) {
       q.whereIn(Array.isArray(where) ? where : [where]);
     }
@@ -269,16 +275,17 @@ module.exports = ({
 
       return Promise.all(
         _.map(grouped, (rows, key) => {
-          let { text, values } = buildWriteQuery({
+          const wqResp = buildWriteQuery({
             operation: 'INSERT',
             table,
             rows,
           });
+          let text = wqResp.text;
+          const values = wqResp.values;
 
-          text += ` ON DUPLICATE KEY UPDATE ${_.map(
-            _.first(rows),
-            (v, k) => `${k} = VALUES(${k})`
-          ).join(', ')}`;
+          text += ` ON DUPLICATE KEY UPDATE ${_
+            .map(_.first(rows), (v, k) => `${k} = VALUES(${k})`)
+            .join(', ')}`;
 
           return query
             .rows(text, values)

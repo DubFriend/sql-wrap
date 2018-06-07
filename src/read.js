@@ -1,24 +1,12 @@
 // @flow
-
 import type {
   SqlWrapType,
-  SqlWrapQuery,
   SqlWrapConnection,
   SqlWrapConnectionPool,
-  SqlWrapInputValues,
-  SqlWrapPagination,
-  SqlWrapQueryConfig,
-  SqlWrapQueryStreamConfig,
   SqlWrapSelectConfig,
-  SqlWrapSelectStreamConfig,
 } from './type';
-
 import type { Readable } from 'stream';
-
-import Promise from 'bluebird';
-import _ from 'lodash';
 import createQuery from './query';
-import squel from 'squel';
 import sqlstring from 'sqlstring';
 
 const resolveConfig = (
@@ -63,13 +51,16 @@ module.exports = ({
       tableOrConfig,
       maybeWhere
     );
-    const q = query.build().select().from(sqlstring.escapeId(table));
+    const q = query
+      .build()
+      .select()
+      .from(sqlstring.escapeId(table));
     if (where) {
       q.whereIn(Array.isArray(where) ? where : [where]);
     }
 
     if (fields) {
-      _.each(fields, f => {
+      fields.forEach(f => {
         q.field(f);
       });
     }
@@ -85,12 +76,15 @@ module.exports = ({
       tableOrConfig,
       maybeWhere
     );
-    const q = query.build().select().from(sqlstring.escapeId(table));
+    const q = query
+      .build()
+      .select()
+      .from(sqlstring.escapeId(table));
     if (where) {
       q.whereIn(Array.isArray(where) ? where : [where]);
     }
     if (fields) {
-      _.each(fields, f => {
+      fields.forEach(f => {
         q.field(f);
       });
     }
@@ -102,9 +96,7 @@ module.exports = ({
     maybeWhere?: Object | Array<Object>
   ): Promise<Object | null> =>
     self.select(tableOrConfig, maybeWhere).then(resp => {
-      const response: any = Array.isArray(resp)
-        ? _.first(resp)
-        : _.first(resp.results);
+      const response: any = Array.isArray(resp) ? resp[0] : resp.results[0];
       return response || null;
     });
 

@@ -3,13 +3,11 @@
 declare var describe: any;
 declare var it: any;
 declare var beforeEach: any;
-declare var afterEach: any;
 
 import _ from 'lodash';
-import Promise from 'bluebird';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import { pool, truncateTable, all, clearAllTables, insert } from './sql';
+import { pool, all, clearAllTables, insert } from './sql';
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -192,22 +190,22 @@ describe('query', () => {
   });
 
   describe('build', () => {
-    const rowsToEdges = (rows: Array<Object>, fields: *) =>
-      _.map(rows, r => ({
-        node: r,
-        cursor: toCursor(r, fields || ['a']),
-      }));
-
     const toCursor = (r: Object, fields: string | Array<string>) =>
       new Buffer(
-        _.map(Array.isArray(fields) ? fields : [fields], f =>
-          String(r[f])
-        ).join('#')
+        _
+          .map(Array.isArray(fields) ? fields : [fields], f => String(r[f]))
+          .join('#')
       ).toString('base64');
 
     const cursorFig = od => ({
       cursor: _.extend({ orderBy: 'a' }, od),
     });
+
+    const rowsToEdges = (rows: Array<Object>, fields: *) =>
+      _.map(rows, r => ({
+        node: r,
+        cursor: toCursor(r, fields || ['a']),
+      }));
 
     const a = { a: 'A', b: 'A' };
     const b = { a: 'B', b: 'B' };
@@ -218,8 +216,7 @@ describe('query', () => {
         insert('compoundKey', a),
         insert('compoundKey', b),
         insert('compoundKey', c),
-      ])
-    );
+      ]));
 
     it('should have option to nest join', () =>
       clearAllTables()
@@ -252,12 +249,17 @@ describe('query', () => {
           Promise.all([insert('key', { id: 'A' }), insert('key', { id: 'B' })])
         )
         .then(() =>
-          query.build().select().from('`key`').order('id').run({
-            paginate: {
-              page: 1,
-              resultsPerPage: 1,
-            },
-          })
+          query
+            .build()
+            .select()
+            .from('`key`')
+            .order('id')
+            .run({
+              paginate: {
+                page: 1,
+                resultsPerPage: 1,
+              },
+            })
         )
         .then(resp => {
           expect(resp).to.deep.equal({
@@ -266,12 +268,17 @@ describe('query', () => {
             pageCount: 2,
             currentPage: 1,
           });
-          return query.build().select().from('`key`').order('id').run({
-            paginate: {
-              page: 2,
-              resultsPerPage: 1,
-            },
-          });
+          return query
+            .build()
+            .select()
+            .from('`key`')
+            .order('id')
+            .run({
+              paginate: {
+                page: 2,
+                resultsPerPage: 1,
+              },
+            });
         })
         .then(resp => {
           expect(resp).to.deep.equal({
