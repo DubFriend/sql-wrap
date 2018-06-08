@@ -28,8 +28,8 @@ gulp.task(
       exec('npm run flow', (err, stdout, stderr) => {
         if (err) {
           console.log(stdout);
+          console.error(stderr);
         }
-        console.error(stderr);
         if (err) {
           reject(err);
         } else {

@@ -222,7 +222,7 @@ module.exports = ({
       };
     };
 
-    const queries = _.map(updates, update =>
+    const queries = _.map(updates, (update: any) =>
       buildUpdateQuery({ table, update })
     );
 

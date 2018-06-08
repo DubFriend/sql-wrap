@@ -28,7 +28,7 @@ module.exports = (rawPool: *): SqlWrapConnectionPool => ({
   }) => rawPool.query({ sql, nestTables, values }).stream(),
   getConnection: () =>
     new Promise((resolve, reject) => {
-      rawPool.getConnection((err, connection) => {
+      rawPool.getConnection((err, connection: any) => {
         if (err) {
           reject(err);
         } else if (connection) {
