@@ -81,8 +81,8 @@ export type SqlWrap = {
     rowOrRows: Array<Object> | Object
   ) => Promise<Array<SqlWrapQueryWriteOutput> | SqlWrapQueryWriteOutput>,
   build: () => _SqlWrapQueryBuilder,
-  escape: () => (data: mixed) => mixed,
-  escapeId: () => (data: string) => string,
+  escape: (data: mixed) => mixed,
+  escapeId: (data: string) => string,
   encodeCursor: (
     orderBy:
       | string
