@@ -23,7 +23,7 @@ import TemplatedValue from './templated-value';
 
 export type SqlWrapQueryBuilder = _SqlWrapQueryBuilder;
 
-export type SqlWrap = {
+export type SqlWrap = {|
   connection: () => Promise<*>,
   release: () => void,
   query: (
@@ -66,11 +66,7 @@ export type SqlWrap = {
     table: string,
     rowOrRows: Array<Object> | Object
   ) => Promise<Array<SqlWrapQueryWriteOutput> | SqlWrapQueryWriteOutput>,
-  update: (
-    table: string,
-    updates: Object | Array<{ update: Object, where: Object | Array<Object> }>,
-    where?: Object | Array<Object>
-  ) => Promise<*>,
+  update: (table: string, updates: *, where?: *) => Promise<*>,
   delete: (table: string, where?: Object | Array<Object>) => Promise<*>,
   save: (
     table: string,
@@ -81,7 +77,7 @@ export type SqlWrap = {
     rowOrRows: Array<Object> | Object
   ) => Promise<Array<SqlWrapQueryWriteOutput> | SqlWrapQueryWriteOutput>,
   build: () => _SqlWrapQueryBuilder,
-  escape: (data: mixed) => mixed,
+  escape: (data: mixed) => string,
   escapeId: (data: string) => string,
   encodeCursor: (
     orderBy:
@@ -90,7 +86,8 @@ export type SqlWrap = {
       | Array<string | SqlWrapOrderByObject>,
     row: Object
   ) => string,
-};
+  templatedValue: *,
+|};
 
 const templatedValue = (template: string, ...args: Array<mixed>) =>
   new TemplatedValue(template, ...args);
@@ -101,70 +98,44 @@ const createSqlWrap = ({
 }: {
   driver: SqlWrapConnectionPool | SqlWrapConnection,
   sqlType: SqlWrapType,
-}) => {
-  const self = {};
-
+}): SqlWrap => {
   const query = createQuery({ driver, sqlType });
   const read = createRead({ driver, sqlType });
   const write = createWrite({ driver, sqlType });
 
-  self.connection = (): Promise<*> =>
-    query
-      .getConnection()
-      .then(conn => createSqlWrap({ driver: conn, sqlType }));
-
-  self.release = (): void => {
-    if (driver.release && typeof driver.release === 'function') {
-      driver.release();
-    } else {
-      throw new TypeError('release is not a function');
-    }
+  const self = {
+    connection: () =>
+      query
+        .getConnection()
+        .then(conn => createSqlWrap({ driver: conn, sqlType })),
+    release: () => {
+      if (driver.release && typeof driver.release === 'function') {
+        driver.release();
+      } else {
+        throw new TypeError('release is not a function');
+      }
+    },
+    query: (textOrConfig, values) => query.rows(textOrConfig, values),
+    one: (textOrConfig, values) => query.row(textOrConfig, values),
+    select: (textOrConfig, where) => read.select(textOrConfig, where),
+    selectOne: (textOrConfig, where) => read.selectOne(textOrConfig, where),
+    stream: (textOrConfig, where) => query.stream(textOrConfig, where),
+    streamTable: (textOrConfig, where) => read.stream(textOrConfig, where),
+    queryStream: (textOrConfig, where) =>
+      Promise.resolve(query.stream(textOrConfig, where)),
+    selectStream: (textOrConfig, where) =>
+      Promise.resolve(read.stream(textOrConfig, where)),
+    insert: (table, rowOrRows) => write.insert(table, rowOrRows),
+    update: (table, rowOrRows, where) => write.update(table, rowOrRows, where),
+    delete: (table, where) => write.delete(table, where),
+    save: (table, rowOrRows) => write.save(table, rowOrRows),
+    replace: (table, rowOrRows) => write.replace(table, rowOrRows),
+    build: () => query.build(),
+    escape: data => sqlString.escape(data),
+    escapeId: data => sqlString.escapeId(data),
+    encodeCursor: (orderBy, row) => query.encodeCursor(orderBy, row),
+    templatedValue,
   };
-
-  self.query = (textOrConfig: *, values?: *): * =>
-    query.rows(textOrConfig, values);
-
-  self.one = self.queryStream = (textOrConfig: *, values?: *): * =>
-    query.row(textOrConfig, values);
-
-  self.select = (textOrConfig: *, where?: *) =>
-    read.select(textOrConfig, where);
-
-  self.selectOne = (textOrConfig: *, where?: *) =>
-    read.selectOne(textOrConfig, where);
-
-  self.stream = (textOrConfig: *, where?: *): * =>
-    query.stream(textOrConfig, where);
-
-  self.streamTable = (textOrConfig: *, where?: *): * =>
-    read.stream(textOrConfig, where);
-
-  self.queryStream = (textOrConfig: *, where?: *): * =>
-    Promise.resolve(query.stream(textOrConfig, where));
-
-  self.selectStream = (textOrConfig: *, where?: *): * =>
-    Promise.resolve(read.stream(textOrConfig, where));
-
-  self.insert = (table: *, rowOrRows: *): * => write.insert(table, rowOrRows);
-
-  self.update = (table: *, rowOrRows: *, where?: *): * =>
-    write.update(table, rowOrRows, where);
-
-  self.delete = (table: *, where?: *): * => write.delete(table, where);
-
-  self.save = (table: *, rowOrRows: *) => write.save(table, rowOrRows);
-
-  self.replace = (table: *, rowOrRows: *): * => write.replace(table, rowOrRows);
-
-  self.build = (): * => query.build();
-
-  self.escape = (data: mixed): string => sqlString.escape(data);
-  self.escapeId = (data: string): string => sqlString.escapeId(data);
-
-  self.encodeCursor = (orderBy: *, row: *): * =>
-    query.encodeCursor(orderBy, row);
-
-  self.templatedValue = templatedValue;
 
   return self;
 };
