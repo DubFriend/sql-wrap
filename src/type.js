@@ -132,12 +132,12 @@ export type SqlWrapQueryBuilder = {|
   join: (
     table: string,
     tableLabel: string,
-    joinWhere: string
+    joinWhere?: string
   ) => SqlWrapQueryBuilder,
   left_join: (
     table: string,
     tableLabel: string,
-    joinWhere: string
+    joinWhere?: string
   ) => SqlWrapQueryBuilder,
   order: (field: string, direction?: boolean) => SqlWrapQueryBuilder,
   run: (fig?: {|
@@ -146,9 +146,7 @@ export type SqlWrapQueryBuilder = {|
     paginate?: SqlWrapPagination,
     cursor?: SqlWrapCursor,
   |}) => Promise<Array<Object> | SqlWrapQueryWriteOutput>,
-  stream: (fig?: {
-    nestTables?: boolean,
-  }) => Readable,
+  stream: (fig?: { nestTables?: boolean }) => Readable,
   one: (fig?: {|
     resultCount?: boolean,
     nestTables?: boolean,
@@ -156,4 +154,5 @@ export type SqlWrapQueryBuilder = {|
     cursor?: SqlWrapCursor,
   |}) => Promise<Object | SqlWrapQueryWriteOutput>,
   toParam: () => { text: string, values: Array<*> },
+  toString: void => string,
 |};
