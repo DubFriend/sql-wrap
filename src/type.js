@@ -58,10 +58,7 @@ export type SqlWrapConnectionPool = {
 
 export type SqlWrapInputValues = Array<mixed>;
 
-export type SqlWrapPagination = {
-  page?: number,
-  resultsPerPage?: number,
-};
+export type SqlWrapPagination = { page?: number, resultsPerPage?: number };
 
 export type SqlWrapCursor = {
   first?: number,

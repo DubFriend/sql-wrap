@@ -68,6 +68,11 @@ module.exports = ({
     return response;
   };
 
+  // self.selectPaginated = (
+  //   tableOrConfig: string | SqlWrapSelectConfig,
+  //   maybeWhere?: Object | Array<Object>
+  // ): Promise<{ results: Array<Object>, resultCount: number }> => {};
+
   self.stream = (
     tableOrConfig: string | SqlWrapSelectConfig,
     maybeWhere?: Object | Array<Object>
