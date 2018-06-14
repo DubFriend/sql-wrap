@@ -33,7 +33,7 @@ exports.clearAllTables = () =>
     exports.truncateTable('timestamp'),
   ]);
 
-exports.insert = (table: string, row: Array<mixed> | mixed): Promise<*> =>
+exports.insert = (table: *, row: any) =>
   exports.pool.query({
     sql: `INSERT INTO \`${table}\` SET ?`,
     values: Array.isArray(row) ? row : [row],

@@ -1,12 +1,19 @@
+// @flow
+import type { Value } from './type';
+
 export default class SqlWrapTemplatedValue {
   template: string;
-  arguments: Array<mixed>;
-  constructor(template: string, ...args: Array<mixed>) {
+  arguments: Array<Value>;
+  constructor(
+    template: string,
+    firstArg: Array<Value> | Value,
+    ...args: Array<Value>
+  ) {
     this.template = template;
-    if (Array.isArray(args[0]) && args.length === 1) {
-      this.arguments = args[0];
+    if (Array.isArray(firstArg)) {
+      this.arguments = firstArg;
     } else {
-      this.arguments = args;
+      this.arguments = [firstArg].concat(args);
     }
   }
 }

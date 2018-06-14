@@ -1,5 +1,5 @@
 // @flow
-import type { SqlWrapConnectionPool } from './type';
+import type { SqlWrapConnectionPool, Value } from './type';
 
 module.exports = (rawPool: *): SqlWrapConnectionPool => ({
   query: ({
@@ -9,7 +9,7 @@ module.exports = (rawPool: *): SqlWrapConnectionPool => ({
   }: {
     sql: string,
     nestTables?: boolean,
-    values?: Array<mixed>,
+    values?: Array<Value>,
   }) =>
     new Promise((resolve, reject) => {
       rawPool.query(
@@ -24,7 +24,7 @@ module.exports = (rawPool: *): SqlWrapConnectionPool => ({
   }: {
     sql: string,
     nestTables?: boolean,
-    values?: Array<mixed>,
+    values?: Array<Value>,
   }) => rawPool.query({ sql, nestTables, values }).stream(),
   getConnection: () =>
     new Promise((resolve, reject) => {

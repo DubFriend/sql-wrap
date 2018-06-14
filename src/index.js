@@ -8,8 +8,8 @@ import type {
   // SqlWrapSelectConfig,
   SqlWrapType,
   // SqlWrapQueryWriteOutput,
-  SqlWrapQueryBuilder as _SqlWrapQueryBuilder,
   // SqlWrapOrderByObject,
+  Value,
 } from './type';
 
 // import type { Readable } from 'stream';
@@ -21,7 +21,7 @@ import createWrite from './write';
 import mysqlDriverAdaper from './mysql-driver-adapter';
 import TemplatedValue from './templated-value';
 
-export type SqlWrapQueryBuilder = _SqlWrapQueryBuilder;
+// export type SqlWrapQueryBuilder = _SqlWrapQueryBuilder;
 
 // export type SqlWrap = {|
 //   connection: () => Promise<*>,
@@ -92,6 +92,7 @@ export type SqlWrap = {|
   connection: *,
   release: *,
   query: *,
+  queryPaginated: *,
   one: *,
   select: *,
   selectOne: *,
@@ -111,7 +112,7 @@ export type SqlWrap = {|
   templatedValue: *,
 |};
 
-const templatedValue = (template: string, ...args: Array<mixed>) =>
+const templatedValue = (template: string, ...args: Array<Value>) =>
   new TemplatedValue(template, ...args);
 
 const createSqlWrap = ({
@@ -137,7 +138,6 @@ const createSqlWrap = ({
         throw new TypeError('release is not a function');
       }
     },
-
     query: (...args: *) => query.rows(...args),
     one: (...args: *) => query.row(...args),
     select: (...args: *) => read.select(...args),
@@ -155,26 +155,6 @@ const createSqlWrap = ({
     escape: (...args: *) => sqlString.escape(...args),
     escapeId: (...args: *) => sqlString.escapeId(...args),
     encodeCursor: (...args: *) => query.encodeCursor(...args),
-
-    // query: (textOrConfig, values) => query.rows(textOrConfig, values),
-    // one: (textOrConfig, values) => query.row(textOrConfig, values),
-    // select: (textOrConfig, where) => read.select(textOrConfig, where),
-    // selectOne: (textOrConfig, where) => read.selectOne(textOrConfig, where),
-    // stream: (textOrConfig, where) => query.stream(textOrConfig, where),
-    // streamTable: (textOrConfig, where) => read.stream(textOrConfig, where),
-    // queryStream: (textOrConfig, where) =>
-    //   Promise.resolve(query.stream(textOrConfig, where)),
-    // selectStream: (textOrConfig, where) =>
-    //   Promise.resolve(read.stream(textOrConfig, where)),
-    // insert: (table, rowOrRows) => write.insert(table, rowOrRows),
-    // update: (table, rowOrRows, where) => write.update(table, rowOrRows, where),
-    // delete: (table, where) => write.delete(table, where),
-    // save: (table, rowOrRows) => write.save(table, rowOrRows),
-    // replace: (table, rowOrRows) => write.replace(table, rowOrRows),
-    // build: () => query.build(),
-    // escape: data => sqlString.escape(data),
-    // escapeId: data => sqlString.escapeId(data),
-    // encodeCursor: (orderBy, row) => query.encodeCursor(orderBy, row),
     templatedValue,
   };
 
