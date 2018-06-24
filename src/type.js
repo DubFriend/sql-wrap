@@ -3,9 +3,8 @@
 import type { Readable } from 'stream';
 
 export type Value = number | boolean | string | null | Date;
-export type Row = { [string]: Value | { [string]: Value } };
-// export type Row = Object;
-export type Where = {| [string]: Value |};
+export type Row = Object;
+export type Where = {};
 
 export type SqlWrapType = 'mysql';
 
@@ -14,17 +13,7 @@ type SqlWrapQuery = ({
   nestTables?: boolean,
   values?: Array<Value>,
 }) => Promise<
-  | Array<Row>
-  | {|
-      bulkWriteKey?: string,
-      fieldCount: number,
-      affectedRows: number,
-      insertId: number,
-      serverStatus: number,
-      warningCount: number,
-      message: string,
-      changedRows: number,
-    |}
+  Array<Row> | {| changedRows?: number |} | {| insertId?: number |}
 >;
 
 type SqlWrapStream = ({

@@ -192,20 +192,19 @@ describe('query', () => {
   describe('build', () => {
     const toCursor = (r: Object, fields: string | Array<string>) =>
       new Buffer(
-        _
-          .map(Array.isArray(fields) ? fields : [fields], f => String(r[f]))
+        (Array.isArray(fields) ? fields : [fields])
+          .map(f => String(r[f]))
           .join('#')
       ).toString('base64');
 
-    const cursorFig = od => ({
-      cursor: _.extend({ orderBy: 'a' }, od),
-    });
+    // const cursorFig = od => ({
+    //   cursor: _.extend({ orderBy: 'a' }, od),
+    // });
+
+    const cursorFig = (od: {}) => ({ orderBy: 'a', ...od });
 
     const rowsToEdges = (rows: Array<Object>, fields: *) =>
-      _.map(rows, r => ({
-        node: r,
-        cursor: toCursor(r, fields || ['a']),
-      }));
+      rows.map(r => ({ node: r, cursor: toCursor(r, fields || ['a']) }));
 
     const a = { a: 'A', b: 'A' };
     const b = { a: 'B', b: 'B' };
@@ -248,18 +247,20 @@ describe('query', () => {
         .then(() =>
           Promise.all([insert('key', { id: 'A' }), insert('key', { id: 'B' })])
         )
-        .then(() =>
-          query
-            .build()
-            .select()
-            .from('`key`')
-            .order('id')
-            .run({
-              paginate: {
-                page: 1,
-                resultsPerPage: 1,
-              },
-            })
+        .then(
+          () =>
+            query
+              .build()
+              .select()
+              .from('`key`')
+              .order('id')
+              .runPaginate({ page: 1, resultsPerPage: 1 })
+          // .run({
+          //   paginate: {
+          //     page: 1,
+          //     resultsPerPage: 1,
+          //   },
+          // })
         )
         .then(resp => {
           expect(resp).to.deep.equal({
@@ -273,12 +274,7 @@ describe('query', () => {
             .select()
             .from('`key`')
             .order('id')
-            .run({
-              paginate: {
-                page: 2,
-                resultsPerPage: 1,
-              },
-            });
+            .runPaginate({ page: 2, resultsPerPage: 1 });
         })
         .then(resp => {
           expect(resp).to.deep.equal({
@@ -294,7 +290,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(cursorFig({ first: 100 }))
+        .runCursor(cursorFig({ first: 100 }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 3,
@@ -313,7 +309,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(cursorFig({ first: 0 }))
+        .runCursor(cursorFig({ first: 0 }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 3,
@@ -332,11 +328,8 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(
-          cursorFig({
-            first: 100,
-            orderBy: { field: 'a', direction: 'DESC' },
-          })
+        .runCursor(
+          cursorFig({ first: 100, orderBy: { field: 'a', direction: 'DESC' } })
         )
         .then(resp => {
           expect(resp).to.deep.equal({
@@ -356,7 +349,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(
+        .runCursor(
           cursorFig({
             first: 100,
             orderBy: {
@@ -387,7 +380,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(
+        .runCursor(
           cursorFig({
             first: 100,
             after: toCursor({ a: b.a.toLowerCase() }, 'a'),
@@ -415,7 +408,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(cursorFig({ first: 1 }))
+        .runCursor(cursorFig({ first: 1 }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 3,
@@ -434,7 +427,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(cursorFig({ last: 1 }))
+        .runCursor(cursorFig({ last: 1 }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 3,
@@ -453,7 +446,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(cursorFig({ first: 100, after: toCursor(a, 'a') }))
+        .runCursor(cursorFig({ first: 100, after: toCursor(a, 'a') }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 2,
@@ -472,7 +465,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(cursorFig({ last: 100, before: toCursor(c, 'a') }))
+        .runCursor(cursorFig({ last: 100, before: toCursor(c, 'a') }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 2,
@@ -491,7 +484,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(
+        .runCursor(
           cursorFig({
             first: 1,
             after: toCursor(a, 'a'),
@@ -515,7 +508,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(cursorFig({ last: 1, after: toCursor(a, 'a') }))
+        .runCursor(cursorFig({ last: 1, after: toCursor(a, 'a') }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 2,
@@ -534,7 +527,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(cursorFig({ first: 1, before: toCursor(c, 'a') }))
+        .runCursor(cursorFig({ first: 1, before: toCursor(c, 'a') }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 2,
@@ -553,7 +546,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(cursorFig({ last: 1, before: toCursor(c, 'a') }))
+        .runCursor(cursorFig({ last: 1, before: toCursor(c, 'a') }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 2,
@@ -573,7 +566,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(cursorFig({ orderBy: orderBy, first: 100 }))
+        .runCursor(cursorFig({ orderBy: orderBy, first: 100 }))
         .then(resp => {
           expect(resp).to.deep.equal({
             resultCount: 3,
@@ -595,7 +588,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(cursorFig({ orderBy: orderBy, first: 100 }))
+        .runCursor(cursorFig({ orderBy: orderBy, first: 100 }))
         .then(resp => {
           const edges = rowsToEdges([c, a, b], _.map(orderBy, o => o.field));
           expect(resp).to.deep.equal({
@@ -617,7 +610,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(
+        .runCursor(
           cursorFig({
             orderBy,
             first: 2,
@@ -645,7 +638,7 @@ describe('query', () => {
         .build()
         .select()
         .from('compoundKey')
-        .run(
+        .runCursor(
           cursorFig({
             orderBy: orderBy,
             first: 2,
@@ -741,7 +734,7 @@ describe('query', () => {
         .select()
         .from('compoundKey')
         .where('a = ?', c.a)
-        .run({ resultCount: true })
+        .runRowCount()
         .then(resp => {
           chai.assert.deepEqual(resp, {
             resultCount: 1,

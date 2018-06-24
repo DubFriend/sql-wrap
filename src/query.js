@@ -23,12 +23,12 @@ type MappedOrderByObject = {
 
 type OrderByDirection = 'ASC' | 'DESC';
 
-type OrderByConfig = {
+type OrderByConfig = {|
   field: string,
   direction?: OrderByDirection,
   serialize?: (fieldToDB: mixed) => mixed,
   deserialize?: (fieldToDB: mixed) => mixed,
-};
+|};
 
 type Pagination = {| page?: number, resultsPerPage?: number |};
 
@@ -40,6 +40,8 @@ type QueryConfig = {
   values?: Array<Value>,
 };
 
+type WriteOutput = { insertId?: number } | { changedRows?: number };
+
 type SelectBuilder = {|
   field: (
     name: string,
@@ -47,7 +49,7 @@ type SelectBuilder = {|
     options?: {| ignorePeriodsForFieldNameQuotes?: boolean |}
   ) => SelectBuilder,
   fields: (
-    { [string]: string } | Array<string>,
+    {} | Array<string>,
     options?: {| ignorePeriodsForFieldNameQuotes?: boolean |}
   ) => SelectBuilder,
   from: (table: string, alias?: string) => SelectBuilder,
@@ -78,6 +80,7 @@ type SelectBuilder = {|
   ) => SelectBuilder,
   where: (condition: string, ...args: Array<Value>) => SelectBuilder,
   whereIn: (where: Array<Where>) => SelectBuilder,
+  whereIfDefined: (condition: string, value: Value | void) => SelectBuilder,
   order: (
     field: string,
     direction?: OrderByDirection,
@@ -109,7 +112,7 @@ type SelectBuilder = {|
       last?: number,
       before?: string,
       after?: string,
-      orderBy: string | OrderByConfig | Array<string | OrderByConfig>,
+      orderBy: string | OrderByConfig | Array<string> | Array<OrderByConfig>,
     |}
   ) => Promise<{|
     resultCount: number,
@@ -135,11 +138,12 @@ type UpdateBuilder = {|
     |}
   ) => UpdateBuilder,
   setFields: (
-    fields: {| [string]: Value |},
+    fields: {},
     options?: {| ignorePeriodsForFieldNameQuotes: boolean |}
   ) => UpdateBuilder,
   where: (statement: string, ...args?: Array<Value>) => UpdateBuilder,
   whereIn: (where: Array<Where>) => UpdateBuilder,
+  whereIfDefined: (condition: string, value: Value | void) => UpdateBuilder,
   limit: number => UpdateBuilder,
   offeset: number => UpdateBuilder,
   toString: void => string,
@@ -151,6 +155,7 @@ type DeleteBuilder = {|
   from: (table: string, alias?: string) => DeleteBuilder,
   where: (condition: string, ...args?: Array<Value>) => DeleteBuilder,
   whereIn: (where: Array<Where>) => DeleteBuilder,
+  whereIfDefined: (condition: string, value: Value | void) => DeleteBuilder,
   limit: number => DeleteBuilder,
   offset: number => DeleteBuilder,
   toString: void => string,
@@ -169,11 +174,11 @@ type InsertBuilder = {|
     |}
   ) => InsertBuilder,
   setFields: (
-    fields: {| [string]: Value |},
+    fields: {},
     options?: {| ignorePeriodsForFieldNameQuotes?: boolean |}
   ) => InsertBuilder,
   setFieldsRows: (
-    fields: Array<{| [string]: Value |}>,
+    fields: Array<{}>,
     options?: {| ignorePeriodsForFieldNameQuotes?: boolean |}
   ) => InsertBuilder,
   fromQuery: (columns: Array<string>, query: SelectBuilder) => InsertBuilder,
@@ -201,11 +206,11 @@ type ReplaceBuilder = {|
     |}
   ) => InsertBuilder,
   setFields: (
-    fields: {| [string]: Value |},
+    fields: {},
     options?: {| ignorePeriodsForFieldNameQuotes?: boolean |}
   ) => InsertBuilder,
   setFieldsRows: (
-    fields: Array<{| [string]: Value |}>,
+    fields: Array<{}>,
     options?: {| ignorePeriodsForFieldNameQuotes?: boolean |}
   ) => InsertBuilder,
   fromQuery: (columns: Array<string>, query: SelectBuilder) => InsertBuilder,
@@ -448,9 +453,15 @@ module.exports = ({
     textOrConfig: string | QueryConfig,
     maybeValues?: Array<Value>
   ): Promise<
-    | SqlWrapQueryWriteOutput
-    | Array<Object>
-    | { results: Array<Object>, resultCount: number }
+    | WriteOutput
+    | Array<Row>
+    | {| results: Array<Row>, resultCount: number |}
+    | {|
+        results: Array<Row>,
+        resultCount: number,
+        pageCount: number,
+        currentPage: number,
+      |}
   > => {
     const {
       sql,
@@ -473,7 +484,15 @@ module.exports = ({
           .then(rows =>
             conn
               .query({ sql: 'SELECT FOUND_ROWS() AS count' })
-              .then(([{ count }]) => {
+              .then(
+                resp =>
+                  Array.isArray(resp)
+                    ? resp[0].count
+                    : Promise.reject(
+                        new TypeError('Response from Query is not an Array')
+                      )
+              )
+              .then(count => {
                 connectionDone(conn);
                 const resp: any = {
                   resultCount: Number(count),
@@ -496,6 +515,14 @@ module.exports = ({
           .then(rows =>
             conn
               .query({ sql: 'SELECT FOUND_ROWS() AS count' })
+              .then(
+                resp =>
+                  Array.isArray(resp)
+                    ? resp[0].count
+                    : Promise.reject(
+                        new TypeError('Response from Query is not an Array')
+                      )
+              )
               .then(([{ count }]) => {
                 connectionDone(conn);
                 const resp: any = {
@@ -518,13 +545,24 @@ module.exports = ({
   self.row = (
     textOrConfig: string | QueryConfig,
     maybeValues?: Array<Value>
-  ): Promise<SqlWrapQueryWriteOutput | Object | null> => {
+  ): Promise<WriteOutput | Row | null> => {
     const config = resolveRowsConfig(textOrConfig, maybeValues);
     config.sql = `${stripLimit(config.sql)} LIMIT 1`;
-    return self
-      .rows(textOrConfig, maybeValues)
-      .then(resp => (Array.isArray(resp) ? _.first(resp) : resp))
-      .then(resp => (resp === undefined ? null : resp));
+    return self.rows(textOrConfig, maybeValues).then(resp => {
+      const r = Array.isArray(resp) ? resp[0] : resp;
+      if (r === undefined) {
+        return null;
+      } else if (Array.isArray(r.results)) {
+        return Promise.reject(
+          new Error('Should not paginate on the "row" method')
+        );
+      } else {
+        return r;
+      }
+    });
+
+    // .then(resp => (Array.isArray(resp) ? resp[0] : resp))
+    // .then(resp => (resp === undefined ? null : resp));
   };
 
   self.build = (): SqlWrapQueryBuilder => {

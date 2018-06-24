@@ -1,6 +1,15 @@
 // @flow
 import type { SqlWrapConnectionPool, Value } from './type';
 
+const mapValues = (v: Value): mixed => {
+  if (v instanceof Date) {
+    const s = v.toISOString();
+    return s.replace('T', ' ').substring(0, s.length - 5);
+  } else {
+    return v;
+  }
+};
+
 module.exports = (rawPool: *): SqlWrapConnectionPool => ({
   query: ({
     sql,
@@ -13,7 +22,7 @@ module.exports = (rawPool: *): SqlWrapConnectionPool => ({
   }) =>
     new Promise((resolve, reject) => {
       rawPool.query(
-        { sql, nestTables, values },
+        { sql, nestTables, values: values && values.map(mapValues) },
         (err, results) => (err ? reject(err) : resolve(results))
       );
     }),
@@ -25,7 +34,10 @@ module.exports = (rawPool: *): SqlWrapConnectionPool => ({
     sql: string,
     nestTables?: boolean,
     values?: Array<Value>,
-  }) => rawPool.query({ sql, nestTables, values }).stream(),
+  }) =>
+    rawPool
+      .query({ sql, nestTables, values: values && values.map(mapValues) })
+      .stream(),
   getConnection: () =>
     new Promise((resolve, reject) => {
       rawPool.getConnection((err, connection: any) => {
