@@ -9,7 +9,6 @@ import createQuery from './query';
 import sqlstring from 'sqlstring';
 import TemplatedValue from './templated-value';
 
-// type Row = {| [string]: Value |};
 type Row = {};
 
 module.exports = ({
