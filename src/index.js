@@ -18,7 +18,6 @@ export type SqlWrap = {|
   connection: *,
   release: *,
   query: *,
-  // queryPaginated: *,
   one: *,
   select: *,
   selectOne: *,

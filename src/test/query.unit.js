@@ -109,7 +109,7 @@ describe('query', () => {
       ]).then(() =>
         query
           .rows({
-            sql: `SELECT * FROM \`key\` k
+            text: `SELECT * FROM \`key\` k
               JOIN compoundKey ck
               ON k.id = ck.a`,
             nestTables: true,
@@ -127,7 +127,7 @@ describe('query', () => {
     it('should option to return resultCount', () =>
       insert('key', { id: 'A' })
         .then(() =>
-          query.rows({ sql: 'SELECT * FROM `key`', resultCount: true })
+          query.rows({ text: 'SELECT * FROM `key`', resultCount: true })
         )
         .then(resp => {
           chai.assert.deepEqual(resp, {
@@ -140,7 +140,7 @@ describe('query', () => {
       Promise.all([insert('key', { id: 'A' }), insert('key', { id: 'B' })])
         .then(() =>
           query.rows({
-            sql: 'SELECT * FROM `key` ORDER BY id',
+            text: 'SELECT * FROM `key` ORDER BY id',
             paginate: {
               page: 1,
               resultsPerPage: 1,
@@ -155,7 +155,7 @@ describe('query', () => {
             currentPage: 1,
           });
           return query.rows({
-            sql: 'SELECT * FROM `key` ORDER BY id',
+            text: 'SELECT * FROM `key` ORDER BY id',
             paginate: {
               page: 2,
               resultsPerPage: 1,
@@ -196,10 +196,6 @@ describe('query', () => {
           .map(f => String(r[f]))
           .join('#')
       ).toString('base64');
-
-    // const cursorFig = od => ({
-    //   cursor: _.extend({ orderBy: 'a' }, od),
-    // });
 
     const cursorFig = (od: {}) => ({ orderBy: 'a', ...od });
 
@@ -247,20 +243,13 @@ describe('query', () => {
         .then(() =>
           Promise.all([insert('key', { id: 'A' }), insert('key', { id: 'B' })])
         )
-        .then(
-          () =>
-            query
-              .build()
-              .select()
-              .from('`key`')
-              .order('id')
-              .runPaginate({ page: 1, resultsPerPage: 1 })
-          // .run({
-          //   paginate: {
-          //     page: 1,
-          //     resultsPerPage: 1,
-          //   },
-          // })
+        .then(() =>
+          query
+            .build()
+            .select()
+            .from('`key`')
+            .order('id')
+            .runPaginate({ page: 1, resultsPerPage: 1 })
         )
         .then(resp => {
           expect(resp).to.deep.equal({
@@ -734,7 +723,7 @@ describe('query', () => {
         .select()
         .from('compoundKey')
         .where('a = ?', c.a)
-        .runRowCount()
+        .runResultCount()
         .then(resp => {
           chai.assert.deepEqual(resp, {
             resultCount: 1,

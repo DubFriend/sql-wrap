@@ -93,7 +93,7 @@ module.exports = ({
     tableOrConfig: string | SelectConfig,
     maybeWhere?: Where | Array<Where>
   ): Promise<Row | null> =>
-    self.select(tableOrConfig, maybeWhere).then(resp => resp[0]);
+    self.select(tableOrConfig, maybeWhere).then(resp => resp[0] || null);
 
   return self;
 };

@@ -14,13 +14,13 @@ exports.pool = mysqlDriverAdaper(rawPool);
 
 exports.truncateTable = (table: string) =>
   exports.pool.query({
-    sql: 'TRUNCATE TABLE ??',
+    text: 'TRUNCATE TABLE ??',
     values: [table],
   });
 
 exports.all = (table: string) =>
   exports.pool.query({
-    sql: `SELECT * FROM ??`,
+    text: `SELECT * FROM ??`,
     values: [table],
   });
 
@@ -35,6 +35,6 @@ exports.clearAllTables = () =>
 
 exports.insert = (table: *, row: any) =>
   exports.pool.query({
-    sql: `INSERT INTO \`${table}\` SET ?`,
+    text: `INSERT INTO \`${table}\` SET ?`,
     values: Array.isArray(row) ? row : [row],
   });

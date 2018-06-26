@@ -9,7 +9,7 @@ export type Where = {};
 export type SqlWrapType = 'mysql';
 
 type SqlWrapQuery = ({
-  sql: string,
+  text: string,
   nestTables?: boolean,
   values?: Array<Value>,
 }) => Promise<
@@ -17,7 +17,7 @@ type SqlWrapQuery = ({
 >;
 
 type SqlWrapStream = ({
-  sql: string,
+  text: string,
   nestTables?: boolean,
   values?: Array<Value>,
 }) => Readable;

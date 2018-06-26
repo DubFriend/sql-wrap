@@ -151,12 +151,11 @@ module.exports = ({
             }
           });
         })
-      ).then(
-        responses =>
-          responses.length === 1 && responses[0].length === 1
-            ? responses[0][0]
-            : {}
-      );
+      ).then(responses => {
+        return responses.length === 1 && responses[0].length === 1
+          ? responses[0][0]
+          : {};
+      });
     } else {
       return Promise.resolve({});
     }
@@ -255,7 +254,7 @@ module.exports = ({
 
     return driver
       .query({
-        sql: _.map(queries, ({ text }) => text).join(';\n'),
+        text: _.map(queries, ({ text }) => text).join(';\n'),
         values: _
           .chain(queries)
           .map(({ values }) => values)

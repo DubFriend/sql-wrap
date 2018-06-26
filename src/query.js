@@ -8,7 +8,6 @@ import type {
   Value,
   Where,
 } from './type';
-
 import type { Readable } from 'stream';
 import _ from 'lodash';
 import squelUnflavored from 'squel';
@@ -33,11 +32,11 @@ type OrderByConfig = {|
 type Pagination = {| page?: number, resultsPerPage?: number |};
 
 type QueryConfig = {
-  sql: string,
-  nestTables?: boolean,
-  paginate?: Pagination,
-  resultCount?: boolean,
+  text: string,
   values?: Array<Value>,
+  nestTables?: boolean,
+  resultCount?: boolean,
+  paginate?: Pagination,
 };
 
 type WriteOutput = { insertId?: number } | { changedRows?: number };
@@ -94,7 +93,7 @@ type SelectBuilder = {|
   toParam: void => {| text: string, values: Array<Value> |},
   run: (?{| nestTables?: boolean |}) => Promise<Array<Row>>,
   one: (?{| nestTables?: boolean |}) => Promise<Row | null>,
-  runRowCount: (
+  runResultCount: (
     ?{| nestTables?: boolean |}
   ) => Promise<{| results: Array<Row>, resultCount: number |}>,
   runPaginate: (
@@ -107,7 +106,6 @@ type SelectBuilder = {|
   |}>,
   runCursor: (
     ?{|
-      nestTables?: boolean,
       first?: number,
       last?: number,
       before?: string,
@@ -261,9 +259,9 @@ const resolveRowsConfig = (
   const config = {};
 
   if (typeof textOrConfig === 'string') {
-    config.sql = textOrConfig;
+    config.text = textOrConfig;
   } else {
-    config.sql = textOrConfig.sql;
+    config.text = textOrConfig.text;
     config.nestTables = textOrConfig.nestTables;
     config.paginate = textOrConfig.paginate;
     config.resultCount = textOrConfig.resultCount;
@@ -381,7 +379,7 @@ module.exports = ({
     const { text, values } = q.toParam();
 
     return self
-      .rows({ sql: text, values, resultCount: true })
+      .rows({ text, values, resultCount: true })
       .then(resp => {
         if (
           typeof resp.results === 'object' &&
@@ -464,7 +462,7 @@ module.exports = ({
       |}
   > => {
     const {
-      sql,
+      text,
       nestTables,
       paginate,
       resultCount,
@@ -476,14 +474,16 @@ module.exports = ({
       return self.getConnection().then(conn => {
         return conn
           .query({
-            sql: `${stripLimit(addCalcFoundRows(sql))} LIMIT ${resultsPerPage +
+            text: `${stripLimit(
+              addCalcFoundRows(text)
+            )} LIMIT ${resultsPerPage +
               (page > 1 ? ` OFFSET ${(page - 1) * resultsPerPage}` : '')}`,
             nestTables,
             values,
           })
           .then(rows =>
             conn
-              .query({ sql: 'SELECT FOUND_ROWS() AS count' })
+              .query({ text: 'SELECT FOUND_ROWS() AS count' })
               .then(
                 resp =>
                   Array.isArray(resp)
@@ -511,10 +511,10 @@ module.exports = ({
     } else if (resultCount === true) {
       return self.getConnection().then(conn => {
         return conn
-          .query({ sql: addCalcFoundRows(sql), nestTables, values })
+          .query({ text: addCalcFoundRows(text), nestTables, values })
           .then(rows =>
             conn
-              .query({ sql: 'SELECT FOUND_ROWS() AS count' })
+              .query({ text: 'SELECT FOUND_ROWS() AS count' })
               .then(
                 resp =>
                   Array.isArray(resp)
@@ -523,7 +523,7 @@ module.exports = ({
                         new TypeError('Response from Query is not an Array')
                       )
               )
-              .then(([{ count }]) => {
+              .then(count => {
                 connectionDone(conn);
                 const resp: any = {
                   resultCount: Number(count),
@@ -538,7 +538,7 @@ module.exports = ({
           );
       });
     } else {
-      return driver.query({ sql, nestTables, values });
+      return driver.query({ text, nestTables, values });
     }
   };
 
@@ -547,7 +547,7 @@ module.exports = ({
     maybeValues?: Array<Value>
   ): Promise<WriteOutput | Row | null> => {
     const config = resolveRowsConfig(textOrConfig, maybeValues);
-    config.sql = `${stripLimit(config.sql)} LIMIT 1`;
+    config.text = `${stripLimit(config.text)} LIMIT 1`;
     return self.rows(textOrConfig, maybeValues).then(resp => {
       const r = Array.isArray(resp) ? resp[0] : resp;
       if (r === undefined) {
@@ -560,32 +560,47 @@ module.exports = ({
         return r;
       }
     });
-
-    // .then(resp => (Array.isArray(resp) ? resp[0] : resp))
-    // .then(resp => (resp === undefined ? null : resp));
   };
 
   self.build = (): SqlWrapQueryBuilder => {
     const wrap = method => () => {
       const s = squel[method]();
 
-      s.run = (fig = {}) => {
-        if (fig.cursor) {
-          return runCursor(s, fig.cursor);
-        } else {
-          const { text, values } = s.toParam();
-          return self.rows(_.extend({ sql: text, values }, fig));
-        }
+      s.run = ({ nestTables = false } = {}) => {
+        const { text, values } = s.toParam();
+        return self.rows({ text, values, nestTables });
       };
+
+      s.runResultCount = ({ nestTables = false } = {}) => {
+        const { text, values } = s.toParam();
+        return self.rows({ text, values, nestTables, resultCount: true });
+      };
+
+      s.runPaginate = ({
+        nestTables = false,
+        page = 1,
+        resultsPerPage = 1,
+      } = {}) => {
+        const { text, values } = s.toParam();
+        return self.rows({
+          text,
+          values,
+          nestTables,
+          paginate: { page, resultsPerPage },
+        });
+      };
+
+      s.runCursor = ({ first, last, before, after, orderBy } = {}) =>
+        runCursor(s, { first, last, before, after, orderBy });
 
       s.stream = (fig = {}) => {
         const { text, values } = s.toParam();
-        return self.stream(_.extend({ sql: text, values }, fig));
+        return self.stream({ text, values, ...fig });
       };
 
       s.one = (fig = {}) => {
         const { text, values } = s.toParam();
-        return self.row(_.extend({ sql: text, values }, fig));
+        return self.row({ text, values, ...fig });
       };
 
       s.whereIfDefined = (sql, value) => {
