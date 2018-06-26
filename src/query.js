@@ -4,24 +4,232 @@ import type {
   SqlWrapType,
   SqlWrapConnection,
   SqlWrapConnectionPool,
-  SqlWrapInputValues,
-  SqlWrapQueryConfig,
-  SqlWrapQueryWriteOutput,
-  SqlWrapOrderByObject,
-  SqlWrapMappedOrderByObject,
-  SqlWrapQueryBuilder,
+  Row,
+  Value,
+  Where,
 } from './type';
-
 import type { Readable } from 'stream';
 import _ from 'lodash';
 import squelUnflavored from 'squel';
 import sqlstring from 'sqlstring';
 
+type MappedOrderByObject = {
+  field: string,
+  isAscending: boolean,
+  serialize: (fieldToDB: mixed) => mixed,
+  deserialize: (fieldToDB: mixed) => mixed,
+};
+
+type OrderByDirection = 'ASC' | 'DESC';
+
+type OrderByConfig = {|
+  field: string,
+  direction?: OrderByDirection,
+  serialize?: (fieldToDB: mixed) => mixed,
+  deserialize?: (fieldToDB: mixed) => mixed,
+|};
+
+type Pagination = {| page?: number, resultsPerPage?: number |};
+
+type QueryConfig = {
+  text: string,
+  values?: Array<Value>,
+  nestTables?: boolean,
+  resultCount?: boolean,
+  paginate?: Pagination,
+};
+
+type WriteOutput = { insertId?: number } | { changedRows?: number };
+
+type SelectBuilder = {|
+  field: (
+    name: string,
+    alias?: string,
+    options?: {| ignorePeriodsForFieldNameQuotes?: boolean |}
+  ) => SelectBuilder,
+  fields: (
+    {} | Array<string>,
+    options?: {| ignorePeriodsForFieldNameQuotes?: boolean |}
+  ) => SelectBuilder,
+  from: (table: string, alias?: string) => SelectBuilder,
+  join: (
+    table: string,
+    aliasOrCondition?: string,
+    condition?: string
+  ) => SelectBuilder,
+  leftJoin: (
+    table: string,
+    aliasOrCondition?: string,
+    condition?: string
+  ) => SelectBuilder,
+  rightJoin: (
+    table: string,
+    aliasOrCondition?: string,
+    condition?: string
+  ) => SelectBuilder,
+  outerJoin: (
+    table: string,
+    aliasOrCondition?: string,
+    condition?: string
+  ) => SelectBuilder,
+  crossJoin: (
+    table: string,
+    aliasOrCondition?: string,
+    condition?: string
+  ) => SelectBuilder,
+  where: (condition: string, ...args: Array<Value>) => SelectBuilder,
+  whereIn: (where: Array<Where>) => SelectBuilder,
+  whereIfDefined: (condition: string, value: Value | void) => SelectBuilder,
+  order: (
+    field: string,
+    direction?: OrderByDirection,
+    ...args: Array<Value>
+  ) => SelectBuilder,
+  group: (field: string) => SelectBuilder,
+  having: (condition: string, ...args: Array<Value>) => SelectBuilder,
+  limit: number => SelectBuilder,
+  offset: number => SelectBuilder,
+  toString: void => string,
+  toParam: void => {| text: string, values: Array<Value> |},
+  run: (?{| nestTables?: boolean |}) => Promise<Array<Row>>,
+  one: (?{| nestTables?: boolean |}) => Promise<Row | null>,
+  runResultCount: (
+    ?{| nestTables?: boolean |}
+  ) => Promise<{| results: Array<Row>, resultCount: number |}>,
+  runPaginate: (
+    ?{| nestTables?: boolean, page?: number, resultsPerPage?: number |}
+  ) => Promise<{|
+    results: Array<Row>,
+    resultCount: number,
+    pageCount: number,
+    currentPage: number,
+  |}>,
+  runCursor: (
+    ?{|
+      first?: number,
+      last?: number,
+      before?: string,
+      after?: string,
+      orderBy: string | OrderByConfig | Array<string> | Array<OrderByConfig>,
+    |}
+  ) => Promise<{|
+    resultCount: number,
+    pageInfo: {|
+      hasPreviousPage: boolean,
+      hasNextPage: boolean,
+      startCursor: string,
+      endCursor: string,
+    |},
+    edges: Array<{| node: Row, cursor: string |}>,
+  |}>,
+  stream: (?{| nestTables?: boolean |}) => Readable,
+|};
+
+type UpdateBuilder = {|
+  table: (name: string, alias?: string) => UpdateBuilder,
+  set: (
+    name: string,
+    value: Value,
+    options?: {|
+      ignorePeriodsForFieldNameQuotes?: boolean,
+      dontQuote?: boolean,
+    |}
+  ) => UpdateBuilder,
+  setFields: (
+    fields: {},
+    options?: {| ignorePeriodsForFieldNameQuotes: boolean |}
+  ) => UpdateBuilder,
+  where: (statement: string, ...args?: Array<Value>) => UpdateBuilder,
+  whereIn: (where: Array<Where>) => UpdateBuilder,
+  whereIfDefined: (condition: string, value: Value | void) => UpdateBuilder,
+  limit: number => UpdateBuilder,
+  offeset: number => UpdateBuilder,
+  toString: void => string,
+  toParam: void => {| text: string, values: Array<Value> |},
+  run: void => Promise<{ changedRows?: number }>,
+|};
+
+type DeleteBuilder = {|
+  from: (table: string, alias?: string) => DeleteBuilder,
+  where: (condition: string, ...args?: Array<Value>) => DeleteBuilder,
+  whereIn: (where: Array<Where>) => DeleteBuilder,
+  whereIfDefined: (condition: string, value: Value | void) => DeleteBuilder,
+  limit: number => DeleteBuilder,
+  offset: number => DeleteBuilder,
+  toString: void => string,
+  toParam: void => {| text: string, values: Array<Value> |},
+  run: void => Promise<{ changedRows?: number }>,
+|};
+
+type InsertBuilder = {|
+  into: (table: string) => InsertBuilder,
+  set: (
+    field: string,
+    value: Value,
+    options?: {|
+      ignorePeriodsForFieldNameQuotes?: boolean,
+      dontQuote?: boolean,
+    |}
+  ) => InsertBuilder,
+  setFields: (
+    fields: {},
+    options?: {| ignorePeriodsForFieldNameQuotes?: boolean |}
+  ) => InsertBuilder,
+  setFieldsRows: (
+    fields: Array<{}>,
+    options?: {| ignorePeriodsForFieldNameQuotes?: boolean |}
+  ) => InsertBuilder,
+  fromQuery: (columns: Array<string>, query: SelectBuilder) => InsertBuilder,
+  onDupUpdate: (
+    name: string,
+    value: Value,
+    options?: {|
+      ignorePeriodsForFieldNameQuotes?: boolean,
+      dontQuote?: boolean,
+    |}
+  ) => InsertBuilder,
+  toString: void => string,
+  toParam: void => {| text: string, values: Array<Value> |},
+  run: void => Promise<{ insertId?: number }>,
+|};
+
+type ReplaceBuilder = {|
+  into: (table: string) => InsertBuilder,
+  set: (
+    field: string,
+    value: Value,
+    options?: {|
+      ignorePeriodsForFieldNameQuotes?: boolean,
+      dontQuote?: boolean,
+    |}
+  ) => InsertBuilder,
+  setFields: (
+    fields: {},
+    options?: {| ignorePeriodsForFieldNameQuotes?: boolean |}
+  ) => InsertBuilder,
+  setFieldsRows: (
+    fields: Array<{}>,
+    options?: {| ignorePeriodsForFieldNameQuotes?: boolean |}
+  ) => InsertBuilder,
+  fromQuery: (columns: Array<string>, query: SelectBuilder) => InsertBuilder,
+  toString: void => string,
+  toParam: void => {| text: string, values: Array<Value> |},
+  run: void => Promise<void>,
+|};
+
+export type SqlWrapQueryBuilder = {|
+  select: void => SelectBuilder,
+  update: void => UpdateBuilder,
+  delete: void => DeleteBuilder,
+  insert: void => InsertBuilder,
+  replace: void => ReplaceBuilder,
+|};
+
 const CURSOR_DELIMETER = '#';
 
 const mapOrderBy = (
-  raw: string | SqlWrapOrderByObject | Array<string | SqlWrapOrderByObject>
-): Array<SqlWrapMappedOrderByObject> =>
+  raw: string | OrderByConfig | Array<string | OrderByConfig>
+): Array<MappedOrderByObject> =>
   _.map(
     Array.isArray(raw) ? raw : [raw],
     o =>
@@ -45,15 +253,15 @@ const mapOrderBy = (
   );
 
 const resolveRowsConfig = (
-  textOrConfig: string | SqlWrapQueryConfig,
-  values?: SqlWrapInputValues
-): SqlWrapQueryConfig => {
+  textOrConfig: string | QueryConfig,
+  values?: Array<Value>
+): QueryConfig => {
   const config = {};
 
   if (typeof textOrConfig === 'string') {
-    config.sql = textOrConfig;
+    config.text = textOrConfig;
   } else {
-    config.sql = textOrConfig.sql;
+    config.text = textOrConfig.text;
     config.nestTables = textOrConfig.nestTables;
     config.paginate = textOrConfig.paginate;
     config.resultCount = textOrConfig.resultCount;
@@ -99,7 +307,7 @@ module.exports = ({
   const stripLimit = sql => sql.replace(/ LIMIT .*/i, '');
 
   const encodeCursor = (
-    orderBy: Array<SqlWrapMappedOrderByObject>,
+    orderBy: Array<MappedOrderByObject>,
     row: Object
   ): string =>
     new Buffer(
@@ -160,12 +368,10 @@ module.exports = ({
 
     if (fig.after) {
       q.where(...buildWhereArgs(decodeCursor(fig.after), true));
-      // q.where.apply(q, buildWhereArgs(decodeCursor(fig.after), true));
     }
 
     if (fig.before) {
       q.where(...buildWhereArgs(decodeCursor(fig.before), false));
-      // q.where.apply(q, buildWhereArgs(decodeCursor(fig.before), false));
     }
 
     q.limit(isAscending ? fig.first : fig.last);
@@ -173,7 +379,7 @@ module.exports = ({
     const { text, values } = q.toParam();
 
     return self
-      .rows({ sql: text, values, resultCount: true })
+      .rows({ text, values, resultCount: true })
       .then(resp => {
         if (
           typeof resp.results === 'object' &&
@@ -226,10 +432,7 @@ module.exports = ({
   };
 
   self.encodeCursor = (
-    orderByRaw:
-      | string
-      | SqlWrapOrderByObject
-      | Array<string | SqlWrapOrderByObject>,
+    orderByRaw: string | OrderByConfig | Array<string | OrderByConfig>,
     row: Object
   ): string => encodeCursor(mapOrderBy(orderByRaw), row);
 
@@ -240,23 +443,26 @@ module.exports = ({
   };
 
   self.stream = (
-    textOrConfig: string | SqlWrapQueryConfig,
-    maybeValues?: SqlWrapInputValues
+    textOrConfig: string | QueryConfig,
+    maybeValues?: Array<Value>
   ): Readable => driver.stream(resolveRowsConfig(textOrConfig, maybeValues));
 
   self.rows = (
-    textOrConfig: string | SqlWrapQueryConfig,
-    maybeValues?: SqlWrapInputValues
+    textOrConfig: string | QueryConfig,
+    maybeValues?: Array<Value>
   ): Promise<
-    | SqlWrapQueryWriteOutput
-    | Array<Object>
-    | {
-        results: Array<Object>,
+    | WriteOutput
+    | Array<Row>
+    | {| results: Array<Row>, resultCount: number |}
+    | {|
+        results: Array<Row>,
         resultCount: number,
-      }
+        pageCount: number,
+        currentPage: number,
+      |}
   > => {
     const {
-      sql,
+      text,
       nestTables,
       paginate,
       resultCount,
@@ -268,15 +474,25 @@ module.exports = ({
       return self.getConnection().then(conn => {
         return conn
           .query({
-            sql: `${stripLimit(addCalcFoundRows(sql))} LIMIT ${resultsPerPage +
+            text: `${stripLimit(
+              addCalcFoundRows(text)
+            )} LIMIT ${resultsPerPage +
               (page > 1 ? ` OFFSET ${(page - 1) * resultsPerPage}` : '')}`,
             nestTables,
             values,
           })
           .then(rows =>
             conn
-              .query({ sql: 'SELECT FOUND_ROWS() AS count' })
-              .then(([{ count }]) => {
+              .query({ text: 'SELECT FOUND_ROWS() AS count' })
+              .then(
+                resp =>
+                  Array.isArray(resp)
+                    ? resp[0].count
+                    : Promise.reject(
+                        new TypeError('Response from Query is not an Array')
+                      )
+              )
+              .then(count => {
                 connectionDone(conn);
                 const resp: any = {
                   resultCount: Number(count),
@@ -295,11 +511,19 @@ module.exports = ({
     } else if (resultCount === true) {
       return self.getConnection().then(conn => {
         return conn
-          .query({ sql: addCalcFoundRows(sql), nestTables, values })
+          .query({ text: addCalcFoundRows(text), nestTables, values })
           .then(rows =>
             conn
-              .query({ sql: 'SELECT FOUND_ROWS() AS count' })
-              .then(([{ count }]) => {
+              .query({ text: 'SELECT FOUND_ROWS() AS count' })
+              .then(
+                resp =>
+                  Array.isArray(resp)
+                    ? resp[0].count
+                    : Promise.reject(
+                        new TypeError('Response from Query is not an Array')
+                      )
+              )
+              .then(count => {
                 connectionDone(conn);
                 const resp: any = {
                   resultCount: Number(count),
@@ -314,43 +538,69 @@ module.exports = ({
           );
       });
     } else {
-      return driver.query({ sql, nestTables, values });
+      return driver.query({ text, nestTables, values });
     }
   };
 
   self.row = (
-    textOrConfig: string | SqlWrapQueryConfig,
-    maybeValues?: SqlWrapInputValues
-  ): Promise<SqlWrapQueryWriteOutput | Object | null> => {
+    textOrConfig: string | QueryConfig,
+    maybeValues?: Array<Value>
+  ): Promise<WriteOutput | Row | null> => {
     const config = resolveRowsConfig(textOrConfig, maybeValues);
-    config.sql = `${stripLimit(config.sql)} LIMIT 1`;
-    return self
-      .rows(textOrConfig, maybeValues)
-      .then(resp => (Array.isArray(resp) ? _.first(resp) : resp))
-      .then(resp => (resp === undefined ? null : resp));
+    config.text = `${stripLimit(config.text)} LIMIT 1`;
+    return self.rows(textOrConfig, maybeValues).then(resp => {
+      const r = Array.isArray(resp) ? resp[0] : resp;
+      if (r === undefined) {
+        return null;
+      } else if (Array.isArray(r.results)) {
+        return Promise.reject(
+          new Error('Should not paginate on the "row" method')
+        );
+      } else {
+        return r;
+      }
+    });
   };
 
   self.build = (): SqlWrapQueryBuilder => {
     const wrap = method => () => {
       const s = squel[method]();
 
-      s.run = (fig = {}) => {
-        if (fig.cursor) {
-          return runCursor(s, fig.cursor);
-        } else {
-          const { text, values } = s.toParam();
-          return self.rows(_.extend({ sql: text, values }, fig));
-        }
+      s.run = ({ nestTables = false } = {}) => {
+        const { text, values } = s.toParam();
+        return self.rows({ text, values, nestTables });
       };
+
+      s.runResultCount = ({ nestTables = false } = {}) => {
+        const { text, values } = s.toParam();
+        return self.rows({ text, values, nestTables, resultCount: true });
+      };
+
+      s.runPaginate = ({
+        nestTables = false,
+        page = 1,
+        resultsPerPage = 1,
+      } = {}) => {
+        const { text, values } = s.toParam();
+        return self.rows({
+          text,
+          values,
+          nestTables,
+          paginate: { page, resultsPerPage },
+        });
+      };
+
+      s.runCursor = ({ first, last, before, after, orderBy } = {}) =>
+        runCursor(s, { first, last, before, after, orderBy });
 
       s.stream = (fig = {}) => {
         const { text, values } = s.toParam();
-        return self.stream(_.extend({ sql: text, values }, fig));
+        return self.stream({ text, values, ...fig });
       };
 
       s.one = (fig = {}) => {
         const { text, values } = s.toParam();
-        return self.row(_.extend({ sql: text, values }, fig));
+        return self.row({ text, values, ...fig });
       };
 
       s.whereIfDefined = (sql, value) => {

@@ -3,12 +3,13 @@ import type {
   SqlWrapType,
   SqlWrapConnection,
   SqlWrapConnectionPool,
-  SqlWrapQueryWriteOutput,
 } from './type';
 import _ from 'lodash';
 import createQuery from './query';
 import sqlstring from 'sqlstring';
 import TemplatedValue from './templated-value';
+
+type Row = {};
 
 module.exports = ({
   driver,
@@ -21,22 +22,31 @@ module.exports = ({
 
   const query = createQuery({ driver, sqlType });
 
-  const prepareWriteData = d =>
-    Array.isArray(d)
-      ? _.map(d, prepareWriteData)
-      : d &&
-        _
-          .chain(d)
-          .omitBy(_.isUndefined)
-          .mapKeys((v, k) => sqlstring.escapeId(k))
-          .value();
+  const prepareWriteData = (
+    d: Row | Array<Row> | void
+  ): Row | Array<Row> | void => {
+    const map = (r: Row): Row =>
+      _
+        .chain(r)
+        .omitBy(_.isUndefined)
+        .mapKeys((v, k) => sqlstring.escapeId(k))
+        .value();
+
+    if (Array.isArray(d)) {
+      return d.map(map);
+    } else if (d) {
+      return map(d);
+    } else {
+      return d;
+    }
+  };
 
   const reduceRowsIntoPlaceholdersAndValues = ({
     columns,
     rows,
   }: {|
     columns?: Array<string>,
-    rows: Array<Object>,
+    rows: Array<Row>,
   |}) =>
     _.reduce(
       rows,
@@ -72,7 +82,15 @@ module.exports = ({
       { placeholders: [], values: [] }
     );
 
-  const buildWriteQuery = ({ operation, table, rows }) => {
+  const buildWriteQuery = ({
+    operation,
+    table,
+    rows,
+  }: {|
+    operation: string,
+    table: string,
+    rows: Array<Row>,
+  |}) => {
     const columns = _
       .chain(rows)
       .first()
@@ -101,8 +119,8 @@ module.exports = ({
 
   self.insert = (
     table: string,
-    rowOrRows: Array<Object> | Object
-  ): Promise<Array<SqlWrapQueryWriteOutput> | SqlWrapQueryWriteOutput> => {
+    rowOrRows: Row | Array<Row>
+  ): Promise<{ insertId?: number }> => {
     const rows = prepareWriteData(
       Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows]
     );
@@ -118,26 +136,35 @@ module.exports = ({
       });
 
       return Promise.all(
-        _.map(grouped, (rows, key) => {
+        Object.entries(grouped).map(entry => {
+          const rows: any = entry[1];
           const { text, values } = buildWriteQuery({
             operation: 'INSERT',
             table,
             rows,
           });
-          return query
-            .rows(text, values)
-            .then((resp: any) => _.extend(resp, { bulkWriteKey: key }));
+          return query.rows(text, values).then(resp => {
+            if (resp.insertId) {
+              return { insertId: resp.insertId };
+            } else {
+              return {};
+            }
+          });
         })
-      ).then(resp => (Array.isArray(rowOrRows) ? resp : _.first(resp)));
+      ).then(responses => {
+        return responses.length === 1 && responses[0].length === 1
+          ? responses[0][0]
+          : {};
+      });
     } else {
-      return Promise.resolve([]);
+      return Promise.resolve({});
     }
   };
 
   self.replace = (
     table: string,
-    rowOrRows: Array<Object> | Object
-  ): Promise<Array<SqlWrapQueryWriteOutput> | SqlWrapQueryWriteOutput> => {
+    rowOrRows: Row | Array<Row>
+  ): Promise<void> => {
     const rows = prepareWriteData(
       Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows]
     );
@@ -153,29 +180,28 @@ module.exports = ({
       });
 
       return Promise.all(
-        _.map(grouped, (rows, key) => {
+        Object.entries(grouped).map(entry => {
+          const rows: any = entry[1];
           const { text, values } = buildWriteQuery({
             operation: 'REPLACE',
             table,
             rows,
           });
-          return query
-            .rows(text, values)
-            .then((resp: any) => _.extend(resp, { bulkWriteKey: key }));
+          return query.rows(text, values);
         })
-      ).then(resp => (Array.isArray(rowOrRows) ? resp : _.first(resp)));
+      ).then(() => Promise.resolve());
     } else {
-      return Promise.resolve([]);
+      return Promise.resolve();
     }
   };
 
-  type UpdateWhere = Object;
+  type UpdateWhere = {};
   type UpdateObject = { update: Object, where: UpdateWhere };
   self.update = (
     table: string,
     updateOrUpdates: Object | Array<UpdateObject>,
     where?: UpdateWhere
-  ): Promise<*> => {
+  ): Promise<{ changedRows?: number }> => {
     const updates = Array.isArray(updateOrUpdates)
       ? _.map(updateOrUpdates, ({ update, where }) => ({
           update: prepareWriteData(update),
@@ -189,7 +215,7 @@ module.exports = ({
         ];
 
     if (!updates.length) {
-      return Promise.resolve();
+      return Promise.resolve({});
     }
 
     const buildUpdateQuery = ({
@@ -226,24 +252,30 @@ module.exports = ({
       buildUpdateQuery({ table, update })
     );
 
-    return driver.query({
-      sql: _.map(queries, ({ text }) => text).join(';\n'),
-      values: _
-        .chain(queries)
-        .map(({ values }) => values)
-        .flatten()
-        .value(),
-    });
+    return driver
+      .query({
+        text: _.map(queries, ({ text }) => text).join(';\n'),
+        values: _
+          .chain(queries)
+          .map(({ values }) => values)
+          .flatten()
+          .value(),
+      })
+      .then(
+        resp =>
+          resp.changedRows && typeof resp.changedRows === 'number'
+            ? { changedRows: resp.changedRows }
+            : {}
+      );
   };
 
   self.delete = (
     table: string,
     where?: Object | Array<Object>
-  ): Promise<SqlWrapQueryWriteOutput | void> => {
+  ): Promise<{ changedRows?: number }> => {
     if (Array.isArray(where) && !where.length) {
-      return Promise.resolve();
+      return Promise.resolve({});
     }
-
     const q = query
       .build()
       .delete()
@@ -251,14 +283,20 @@ module.exports = ({
     if (where) {
       q.whereIn(Array.isArray(where) ? where : [where]);
     }
-    const response: any = q.run();
-    return response;
+    return q
+      .run()
+      .then(
+        resp =>
+          resp.changedRows && typeof resp.changedRows === 'number'
+            ? { changedRows: resp.changedRows }
+            : {}
+      );
   };
 
   self.save = (
     table: string,
     rowOrRows: Array<Object> | Object
-  ): Promise<Array<SqlWrapQueryWriteOutput> | SqlWrapQueryWriteOutput> => {
+  ): Promise<{ changedRows?: number }> => {
     const rows = prepareWriteData(
       Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows]
     );
@@ -274,26 +312,33 @@ module.exports = ({
       });
 
       return Promise.all(
-        _.map(grouped, (rows, key) => {
-          const wqResp = buildWriteQuery({
-            operation: 'INSERT',
-            table,
-            rows,
-          });
+        Object.entries(grouped).map(entry => {
+          const rows: any = entry[1];
+          const wqResp = buildWriteQuery({ operation: 'INSERT', table, rows });
           let text = wqResp.text;
           const values = wqResp.values;
 
-          text += ` ON DUPLICATE KEY UPDATE ${_
-            .map(_.first(rows), (v, k) => `${k} = VALUES(${k})`)
+          text += ` ON DUPLICATE KEY UPDATE ${Object.keys(rows[0])
+            .map(k => `${k} = VALUES(${k})`)
             .join(', ')}`;
 
           return query
             .rows(text, values)
-            .then((resp: any) => _.extend(resp, { bulkWriteKey: key }));
+            .then(
+              resp =>
+                resp.changedRows && typeof resp.changedRows === 'number'
+                  ? { changedRows: resp.changedRows }
+                  : {}
+            );
         })
-      ).then(resp => (Array.isArray(rowOrRows) ? resp : _.first(resp)));
+      ).then(
+        responses =>
+          responses.length === 1 && responses[0].length === 1
+            ? responses[0][0]
+            : {}
+      );
     } else {
-      return Promise.resolve([]);
+      return Promise.resolve({});
     }
   };
 

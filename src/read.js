@@ -3,31 +3,37 @@ import type {
   SqlWrapType,
   SqlWrapConnection,
   SqlWrapConnectionPool,
-  SqlWrapSelectConfig,
+  Where,
+  Row,
 } from './type';
+
+type SelectConfig = {|
+  table: string,
+  fields?: Array<string>,
+  nestTables?: boolean,
+  where?: Where | Array<Where>,
+|};
+
 import type { Readable } from 'stream';
 import createQuery from './query';
 import sqlstring from 'sqlstring';
 
 const resolveConfig = (
-  tableOrConfig: string | SqlWrapSelectConfig,
-  where?: Object | Array<Object>
-): SqlWrapSelectConfig => {
+  tableOrConfig: string | SelectConfig,
+  where?: Where | Array<Where>
+): SelectConfig => {
   const resolved = {};
   if (typeof tableOrConfig === 'string') {
     resolved.table = tableOrConfig;
   } else {
     resolved.table = tableOrConfig.table;
     resolved.fields = tableOrConfig.fields;
-    resolved.paginate = tableOrConfig.paginate;
     resolved.where = tableOrConfig.where;
   }
-
   if (where) {
     resolved.where = where;
   }
-
-  return resolved;
+  return { ...resolved };
 };
 
 module.exports = ({
@@ -42,12 +48,10 @@ module.exports = ({
   const query = createQuery({ driver, sqlType });
 
   self.select = (
-    tableOrConfig: string | SqlWrapSelectConfig,
-    maybeWhere?: Object | Array<Object>
-  ): Promise<
-    Array<Object> | { results: Array<Object>, resultCount: number }
-  > => {
-    const { table, fields, nestTables, paginate, where } = resolveConfig(
+    tableOrConfig: string | SelectConfig,
+    maybeWhere?: Where | Array<Where>
+  ): Promise<Array<Row>> => {
+    const { table, fields, nestTables, where } = resolveConfig(
       tableOrConfig,
       maybeWhere
     );
@@ -58,24 +62,15 @@ module.exports = ({
     if (where) {
       q.whereIn(Array.isArray(where) ? where : [where]);
     }
-
     if (fields) {
-      fields.forEach(f => {
-        q.field(f);
-      });
+      q.fields(fields);
     }
-    const response: any = q.run({ paginate, nestTables });
-    return response;
+    return q.run({ nestTables });
   };
 
-  // self.selectPaginated = (
-  //   tableOrConfig: string | SqlWrapSelectConfig,
-  //   maybeWhere?: Object | Array<Object>
-  // ): Promise<{ results: Array<Object>, resultCount: number }> => {};
-
   self.stream = (
-    tableOrConfig: string | SqlWrapSelectConfig,
-    maybeWhere?: Object | Array<Object>
+    tableOrConfig: string | SelectConfig,
+    maybeWhere?: Where | Array<Where>
   ): Readable => {
     const { table, fields, nestTables, where } = resolveConfig(
       tableOrConfig,
@@ -89,21 +84,16 @@ module.exports = ({
       q.whereIn(Array.isArray(where) ? where : [where]);
     }
     if (fields) {
-      fields.forEach(f => {
-        q.field(f);
-      });
+      q.fields(fields);
     }
     return q.stream({ nestTables });
   };
 
   self.selectOne = (
-    tableOrConfig: string | SqlWrapSelectConfig,
-    maybeWhere?: Object | Array<Object>
-  ): Promise<Object | null> =>
-    self.select(tableOrConfig, maybeWhere).then(resp => {
-      const response: any = Array.isArray(resp) ? resp[0] : resp.results[0];
-      return response || null;
-    });
+    tableOrConfig: string | SelectConfig,
+    maybeWhere?: Where | Array<Where>
+  ): Promise<Row | null> =>
+    self.select(tableOrConfig, maybeWhere).then(resp => resp[0] || null);
 
   return self;
 };

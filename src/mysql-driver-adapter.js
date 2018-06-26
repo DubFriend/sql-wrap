@@ -3,29 +3,29 @@ import type { SqlWrapConnectionPool } from './type';
 
 module.exports = (rawPool: *): SqlWrapConnectionPool => ({
   query: ({
-    sql,
+    text,
     nestTables,
     values,
   }: {
-    sql: string,
+    text: string,
     nestTables?: boolean,
-    values?: Array<mixed>,
+    values?: Array<any>,
   }) =>
     new Promise((resolve, reject) => {
       rawPool.query(
-        { sql, nestTables, values },
+        { sql: text, nestTables, values },
         (err, results) => (err ? reject(err) : resolve(results))
       );
     }),
   stream: ({
-    sql,
+    text,
     nestTables,
     values,
   }: {
-    sql: string,
+    text: string,
     nestTables?: boolean,
-    values?: Array<mixed>,
-  }) => rawPool.query({ sql, nestTables, values }).stream(),
+    values?: Array<any>,
+  }) => rawPool.query({ sql: text, nestTables, values }).stream(),
   getConnection: () =>
     new Promise((resolve, reject) => {
       rawPool.getConnection((err, connection: any) => {
@@ -33,19 +33,21 @@ module.exports = (rawPool: *): SqlWrapConnectionPool => ({
           reject(err);
         } else if (connection) {
           resolve({
-            stream: ({ sql, nestTables, values }) => {
+            stream: ({ text, nestTables, values }) => {
               if (connection && typeof connection.stream === 'function') {
-                return connection.stream({ sql, nestTables, values }).stream();
+                return connection
+                  .stream({ sql: text, nestTables, values })
+                  .stream();
               } else {
                 throw new Error('connection.stream is not a function');
               }
             },
-            query: ({ sql, nestTables, values }) =>
+            query: ({ text, nestTables, values }) =>
               new Promise((resolve, reject) => {
                 (connection &&
                   typeof connection.query === 'function' &&
                   connection.query(
-                    { sql, nestTables, values },
+                    { sql: text, nestTables, values },
                     (err, results) => (err ? reject(err) : resolve(results))
                   )) ||
                   reject(new Error('connection.query is not a function'));
