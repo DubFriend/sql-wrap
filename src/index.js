@@ -15,26 +15,26 @@ import mysqlDriverAdaper from './mysql-driver-adapter';
 import TemplatedValue from './templated-value';
 
 export type SqlWrap = {|
-  connection: *,
-  release: *,
-  query: *,
-  one: *,
-  select: *,
-  selectOne: *,
-  stream: *,
-  streamTable: *,
-  queryStream: *,
-  selectStream: *,
-  insert: *,
-  update: *,
-  delete: *,
-  save: *,
-  replace: *,
   build: *,
+  connection: *,
+  delete: *,
+  encodeCursor: *,
   escape: *,
   escapeId: *,
-  encodeCursor: *,
+  insert: *,
+  one: *,
+  query: *,
+  queryStream: *,
+  release: *,
+  replace: *,
+  save: *,
+  select: *,
+  selectOne: *,
+  selectStream: *,
+  stream: *,
+  streamTable: *,
   templatedValue: *,
+  update: *,
 |};
 
 const templatedValue = (template: string, ...args: Array<Value>) =>
@@ -52,10 +52,19 @@ const createSqlWrap = ({
   const write = createWrite({ driver, sqlType });
 
   const self = {
+    build: () => query.build(),
     connection: () =>
       query
         .getConnection()
         .then(conn => createSqlWrap({ driver: conn, sqlType })),
+    delete: (...args: *) => write.delete(...args),
+    encodeCursor: (...args: *) => query.encodeCursor(...args),
+    escape: (...args: *) => sqlString.escape(...args),
+    escapeId: (...args: *) => sqlString.escapeId(...args),
+    insert: (...args: *) => write.insert(...args),
+    one: (...args: *) => query.row(...args),
+    query: (...args: *) => query.rows(...args),
+    queryStream: (...args: *) => query.stream(...args),
     release: () => {
       if (driver.release && typeof driver.release === 'function') {
         driver.release();
@@ -63,24 +72,15 @@ const createSqlWrap = ({
         throw new TypeError('release is not a function');
       }
     },
-    query: (...args: *) => query.rows(...args),
-    one: (...args: *) => query.row(...args),
+    replace: (...args: *) => write.replace(...args),
+    save: (...args: *) => write.save(...args),
     select: (...args: *) => read.select(...args),
     selectOne: (...args: *) => read.selectOne(...args),
+    selectStream: (...args: *) => read.stream(...args),
     stream: (...args: *) => query.stream(...args),
     streamTable: (...args: *) => read.stream(...args),
-    queryStream: (...args: *) => Promise.resolve(query.stream(...args)),
-    selectStream: (...args: *) => Promise.resolve(read.stream(...args)),
-    insert: (...args: *) => write.insert(...args),
-    update: (...args: *) => write.update(...args),
-    delete: (...args: *) => write.delete(...args),
-    save: (...args: *) => write.save(...args),
-    replace: (...args: *) => write.replace(...args),
-    build: () => query.build(),
-    escape: (...args: *) => sqlString.escape(...args),
-    escapeId: (...args: *) => sqlString.escapeId(...args),
-    encodeCursor: (...args: *) => query.encodeCursor(...args),
     templatedValue,
+    update: (...args: *) => write.update(...args),
   };
 
   return self;
