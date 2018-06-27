@@ -22,6 +22,61 @@ const sql = sqlWrap({
 
 ## API
 
+- [build](#build)
+  - [select](#select-builder)
+    - [field](#select.field)
+    - [fields](#select.fields)
+    - [from](#select.from)
+    - [join](#select.join)
+    - [leftJoin](#select.leftJoin)
+    - [rightJoin](#select.rightJoin)
+    - [outerJoin](#select.outerJoin)
+    - [crossJoin](#select.crossJoin)
+    - [where](#select.where)
+    - [whereIn](#select.whereIn)
+    - [whereIfDefined](#select.whereIfDefined)
+    - [order](#select.order)
+    - [group](#select.group)
+    - [having](#select.having)
+    - [limit](#select.limit)
+    - [offset](#select.offset)
+    - [toString](#select.toString)
+    - [toParam](#select.toParam)
+    - [run](#select.run)
+    - [one](#select.one)
+    - [runResultCount](#select.runResultCount)
+    - [runPaginate](#select.runPaginate)
+    - [runCursor](#select.runCursor)
+    - [stream](#select.stream)
+  - [update](#update-builder)
+  - [delete](#delete-builder)
+  - [insert](#insert-builder)
+  - [replace](#replace-builder)
+- [connection](#connection)
+- [delete](#delete)
+- [encodeCursor](#encodeCursor)
+- [escape](#escape)
+- [escapeId](#escapeId)
+- [insert](#insert)
+- [one](#one)
+- [query](#query)
+- [queryStream](#queryStream)
+- [release](#release)
+- [replace](#replace)
+- [save](#save)
+- [select](#select)
+- [selectOne](#selectOne)
+- [selectStream](#selectStream)
+- [stream](#stream)
+- [streamTable](#streamTable)
+- [templatedValue](#templatedValue)
+- [update](#update)
+
+### build
+
+`void => QueryBuilder`
+Returns a QueryBuilder (See QueryBuilder Spec Below)
+
 ```
 export type SqlWrap = {|
   build: SqlWrapQueryBuilder,
