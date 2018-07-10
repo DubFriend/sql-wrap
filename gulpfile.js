@@ -42,13 +42,7 @@ gulp.task(
 gulp.task('test', ['flow', 'transpile', 'flow-copy-source'], () =>
   gulp
     .src(['lib/**/test/**/*.unit.js', 'lib/**/test/**/*.e2e.js'])
-    .pipe(
-      mocha({
-        reporter: 'dot',
-        timeout: 3000,
-        grep: argv.grep,
-      })
-    )
+    .pipe(mocha({ reporter: 'dot', timeout: 3000, grep: argv.grep }))
     .once('error', err => {
       console.error(err.stack);
       process.exit(1);

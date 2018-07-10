@@ -1,4 +1,4 @@
-# sql-wrap
+# SQL Wrap
 
 Makes working with sql easy
 
@@ -6,184 +6,150 @@ Makes working with sql easy
 
 ## Instantiation
 
-let pool = mysql.createPool(config.mysql);
-that.sql = createNodeMySQL(pool);
-
 ```javascript
-var sql = createNodeMySQL(mysql.createPool({
-    host: config.mysql.host,
-    user: config.mysql.user,
-    password: config.mysql.password,
-}));
-```
-
-Pool Clusters with read write seperation is also supported
-```javascript
-var poolCluster = mysql.createPoolCluster({
-    canRetry: true,
-    removeNodeErrorCount: 1,
-    restoreNodeTimeout: 20000,
-    defaultSelector: 'RR'
-});
-
-poolCluster.add('MASTER', {
-    connectionLimit: 200,
-    host: config.mysql.host,
-    port: 3306,
-    user: config.mysql.user,
-    password: config.mysql.password,
-    database: config.mysql.database
-});
-
-poolCluster.add('SLAVE_1', {
-    connectionLimit: 200,
-    host: config.mysql.host,
-    port: 3307,
-    user: config.mysql.user,
-    password: config.mysql.password,
-    database: config.mysql.database
-});
-
-var sql = createNodeMySQL(poolCluster, {
-    //uses the same pattern as node-mysql's getConnection patterns
-    replication: {
-        write: 'MASTER',
-        read: 'SLAVE_*'
-    }
+const sqlWrap = require('sql-wrap');
+const sql = sqlWrap({
+  driver: sqlWrap.mysqlDriverAdapter(
+    require('mysql').createPool({
+      host: '127.0.0.1',
+      user: 'root',
+      password: 'password',
+      database: 'test',
+    })
+  ),
 });
 ```
 
+## API
 
+- [build](#build)
+  - [select](#select-builder)
+    - [crossJoin](#select.crossJoin)
+      | [field](#select.field)
+      | [fields](#select.fields)
+      | [from](#select.from)
+      | [group](#select.group)
+      | [having](#select.having)
+      | [join](#select.join)
+      | [leftJoin](#select.leftJoin)
+      | [limit](#select.limit)
+      | [offset](#select.offset)
+      | [one](#select.one)
+      | [order](#select.order)
+      | [outerJoin](#select.outerJoin)
+      | [rightJoin](#select.rightJoin)
+      | [run](#select.run)
+      | [runCursor](#select.runCursor)
+      | [runPaginate](#select.runPaginate)
+      | [runResultCount](#select.runResultCount)
+      | [stream](#select.stream)
+      | [toParam](#select.toParam)
+      | [toString](#select.toString)
+      | [where](#select.where)
+      | [whereIfDefined](#select.whereIfDefined)
+      | [whereIn](#select.whereIn)
+  - [update](#update-builder)
+  - [delete](#delete-builder)
+  - [insert](#insert-builder)
+  - [replace](#replace-builder)
+- [connection](#connection)
+- [delete](#delete)
+- [encodeCursor](#encodeCursor)
+- [escape](#escape)
+- [escapeId](#escapeId)
+- [insert](#insert)
+- [one](#one)
+- [query](#query)
+- [queryStream](#queryStream)
+- [release](#release)
+- [replace](#replace)
+- [save](#save)
+- [select](#select)
+- [selectOne](#selectOne)
+- [selectStream](#selectStream)
+- [stream](#stream)
+- [streamTable](#streamTable)
+- [templatedValue](#templatedValue)
+- [update](#update)
 
+### build
 
-## Methods
+`void => QueryBuilder`
+Returns a QueryBuilder (See QueryBuilder Spec Below)
 
-In general node-mysql-wrap exposes the same interface as node-mysql.  All methods
-take callbacks with the same `function (err, res) {}` signature as node-mysql.
-In addition all methods also return [q](https://github.com/kriskowal/q) promises.
-
-In the following examples, parameters marked with an asterik (\*) character are
-optional.
-
-### query(sqlStatement, \*values)
-```javascript
-sql.query('SELECT name FROM fruit WHERE color = "yellow"')
-.then(function (res) {
-    console.log(res);
-    //example output: [{ name: "banana" }, { name: "lemon" }]
-});
 ```
-
-`query` may take a configuration object in place of the `sqlStatement` parameter.
-this object allows for node-mysql's nested table join api, as well as pagination.
-```javascript
-sql.query({
-  sql: 'SELECT * FROM fruitBasket LEFT JOIN fruit ON fruit.basketID = fruitBasket.id',
-  nestTables: true,
-  paginate: {
-    page: 3,
-    resultsPerPage: 15
-  }
-});
-```
-
-### queryStream(sqlStatement, \*values)
-```javascript
-sql.queryStream('SELECT name FROM fruit WHERE color = "yellow"')
-.then(function (stream) {
-    stream.on('data', row => {
-        console.log(row);
-        //example output: { name: "banana" }
-    });
-
-
-    stream.on('end', () => {
-        console.log('end of stream';)
-    });
-});
-```
-
-### one(sqlStatement, \*values)
-Works the same as sql.query except it only returns a single row instead of an array
-of rows.  Adds a "LIMIT 1" clause if a LIMIT clause is not allready present in
-the sqlStatement.
-
-### select(table, \*whereEqualsObject)
-```javascript
-// equivalent to sql.query('SELECT * FROM fruit WHERE color = "yellow" AND isRipe = "true"')
-sql.select('fruit', { color: 'yellow', isRipe: true })
-```
-
-### selectStream(table, \*whereEqualsObject)
-```javascript
-sql.selectStream('fruit')
-.then(function (stream) {
-    stream.on('data', row => {
-        console.log(row);
-        //example output: { name: "banana" }
-    });
-
-    stream.on('end', () => {
-        console.log('end of stream';)
-    });
-});
-```
-
-### selectOne(table, \*whereEqualsObject, \*callback)
-Same as sql.select except selectOne returns a single row instead of an array of rows.
-
-
-`select` and `selectOne` may take a configuration object in place of the table
-parameter.  The configuration object add pagination and/or restrict which fields
-are selected.
-```javascript
-sql.select({
-  table: 'fruit',
-  fields: ['color'],
-  paginate: {
-    page: 2,
-    resultsPerPage: 15
-  }
-});
-```
-
-
-
-### insert(table, insertObject, \*callback)
-```javascript
-sql.insert('fruit', { name: 'plum', color: 'purple' });
-```
-You can also pass sql.insert an array of insertObjects to insert multiple rows in a query
-```javascript
-sql.insert('fruit', [
-    { name: 'plum', color: 'purple'},
-    { name: 'grape', color: 'green' }
-])
-```
-
-### replace(table, insertObject, \*callback)
-[Supports Mysql "REPLACE INTO" syntax](https://dev.mysql.com/doc/refman/5.0/en/replace.html)
-```javascript
-sql.replace('fruit', { uniqueKey: 5, name: 'plum', isRipe: false, color: 'brown' });
-```
-
-### save(table, insertObject, \*callback)
-Inserts a new row if no duplicate unique or primary keys
-are found, else it updates that row.
-```sql
-INSERT INTO fruit (uniqueKey, isRipe) VALUES (5, 0)
-ON DUPLICATE KEY UPDATE uniqueKey=5, isRipe=0
-```
-```javascript
-sql.save('fruit', { uniqueKey: 5, isRipe: false });
-```
-
-### update(table, setValues, \*whereEqualsObject, \*callback)
-```javascript
-sql.update('fruit', { isRipe: false }, { name: 'grape' })
-```
-
-### delete(table, \*whereEqualsObject, \*callback)
-```javascript
-sql.delete('fruit', { isRipe: false })
+export type SqlWrap = {|
+  build: SqlWrapQueryBuilder,
+  connection: () => Promise<SqlWrap>,
+  delete: (
+    table: string,
+    where?: Object | Array<Object>
+  ) => Promise<{ changedRows?: number }>,
+  encodeCursor: (
+    orderByRaw: string | OrderByConfig | Array<string | OrderByConfig>,
+    row: Object
+  ) => string,
+  escape: string => string,
+  escapeId: string => string,
+  insert: (
+    table: string,
+    rowOrRows: Row | Array<Row>
+  ) => Promise<{ insertId?: number }>,
+  one: (
+    textOrConfig: string | QueryConfig,
+    maybeValues?: Array<Value>
+  ) => Promise<WriteOutput | Row | null>,
+  query: (
+    textOrConfig: string | QueryConfig,
+    maybeValues?: Array<Value>
+  ): Promise<
+    | WriteOutput
+    | Array<Row>
+    | {| results: Array<Row>, resultCount: number |}
+    | {|
+        results: Array<Row>,
+        resultCount: number,
+        pageCount: number,
+        currentPage: number,
+      |},
+  queryStream: (
+    textOrConfig: string | QueryConfig,
+    maybeValues?: Array<Value>
+  ) => Readable,
+  release: () => void,
+  replace: (
+    table: string,
+    rowOrRows: Row | Array<Row>
+  ) => Promise<void>,
+  save: (
+    table: string,
+    rowOrRows: Array<Object> | Object
+  ) => Promise<{ changedRows?: number }>,
+  select: (
+    tableOrConfig: string | SelectConfig,
+    maybeWhere?: Where | Array<Where>
+  ) => Promise<Array<Row>>,
+  selectOne: (
+    tableOrConfig: string | SelectConfig,
+    maybeWhere?: Where | Array<Where>
+  ) => Promise<Row | null>,
+  selectStream: (
+    tableOrConfig: string | SelectConfig,
+    maybeWhere?: Where | Array<Where>
+  ) => Readable,
+  stream: (
+    textOrConfig: string | QueryConfig,
+    maybeValues?: Array<Value>
+  ): Readable,
+  streamTable: (
+    tableOrConfig: string | SelectConfig,
+    maybeWhere?: Where | Array<Where>
+  ): Readable,
+  templatedValue: (template: string, ...args: Array<Value>) => TemplatedValue,
+  update: (
+    table: string,
+    updateOrUpdates: Object | Array<UpdateObject>,
+    where?: UpdateWhere
+  ) => Promise<{ changedRows?: number }>,
+|};
 ```

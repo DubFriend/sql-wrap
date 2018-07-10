@@ -1,5 +1,4 @@
 // @flow
-/* eslint-disable no-unused-expressions */
 declare var describe: any;
 declare var it: any;
 declare var beforeEach: any;
@@ -31,15 +30,15 @@ describe('write.unit', () => {
         .insert('key', { id: 'A' })
         .then(resp => {
           expect(JSON.parse(JSON.stringify(resp))).to.deep.equal({
-            bulkWriteKey: '`id`',
-            fieldCount: 0,
-            affectedRows: 1,
-            insertId: 0,
-            serverStatus: 2,
-            warningCount: 0,
-            message: '',
-            protocol41: true,
-            changedRows: 0,
+            // bulkWriteKey: '`id`',
+            // fieldCount: 0,
+            // affectedRows: 1,
+            // insertId: 0,
+            // serverStatus: 2,
+            // warningCount: 0,
+            // message: '',
+            // protocol41: true,
+            // changedRows: 0,
           });
           return all('key');
         })
@@ -193,18 +192,7 @@ describe('write.unit', () => {
       write
         .save('compoundKey', { b: 'B', a: 'A' })
         .then(resp => {
-          expect(JSON.parse(JSON.stringify(resp))).to.deep.equal({
-            bulkWriteKey: '`a`:`b`',
-            fieldCount: 0,
-            affectedRows: 1,
-            insertId: 0,
-            serverStatus: 2,
-            warningCount: 0,
-            message: '',
-            protocol41: true,
-            changedRows: 0,
-          });
-
+          expect(resp).to.deep.equal({});
           return all('compoundKey');
         })
         .then(rows => {
@@ -214,7 +202,10 @@ describe('write.unit', () => {
     it('should update row if exists by unique constraint', () =>
       insert('defaultValue', { id: 'A', default: 'foo' })
         .then(() => write.save('defaultValue', { id: 'A', default: 'bar' }))
-        .then(() => all('defaultValue'))
+        .then(resp => {
+          expect(resp).to.deep.equal({});
+          return all('defaultValue');
+        })
         .then(rows => {
           expect(rows).to.deep.equal([{ id: 'A', default: 'bar' }]);
         }));
@@ -260,10 +251,7 @@ describe('write.unit', () => {
 
     it('should handle explicitly undefined value', () =>
       write
-        .save('defaultValue', {
-          id: 'a',
-          default: undefined,
-        })
+        .save('defaultValue', { id: 'a', default: undefined })
         .then(() => all('defaultValue'))
         .then(rows => {
           expect(rows).to.deep.equal([{ id: 'a', default: 'DEFAULT' }]);
@@ -288,17 +276,7 @@ describe('write.unit', () => {
       write
         .replace('defaultValue', { id: 'A', default: 'foo' })
         .then(resp => {
-          expect(JSON.parse(JSON.stringify(resp))).to.deep.equal({
-            bulkWriteKey: '`default`:`id`',
-            fieldCount: 0,
-            affectedRows: 1,
-            insertId: 0,
-            serverStatus: 2,
-            warningCount: 0,
-            message: '',
-            protocol41: true,
-            changedRows: 0,
-          });
+          expect(resp).to.be.undefined;
           return all('defaultValue');
         })
         .then(rows => {
