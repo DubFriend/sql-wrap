@@ -114,7 +114,7 @@ export type SqlWrapQueryBuilder = {|
     options?: Object
   ) => SqlWrapQueryBuilder,
   from: (table: string, tableNickName?: string) => SqlWrapQueryBuilder,
-  where: (statement: string, value?: mixed) => SqlWrapQueryBuilder,
+  where: (statement: string, ...value?: Array<mixed>) => SqlWrapQueryBuilder,
   whereIfDefined: (statement: string, value?: mixed) => SqlWrapQueryBuilder,
   whereIn: (where: Array<Object>) => SqlWrapQueryBuilder,
   onDupUpdate: (
