@@ -128,6 +128,7 @@ export type SqlWrapQueryBuilder = {|
     opt?: { dontQuote?: boolean }
   ) => SqlWrapQueryBuilder,
   field: (statement: string, label?: string) => SqlWrapQueryBuilder,
+  fields: (Array<string>) => SqlWrapQueryBuilder,
   group: (field: string) => SqlWrapQueryBuilder,
   join: (
     table: string,
@@ -155,4 +156,5 @@ export type SqlWrapQueryBuilder = {|
   |}) => Promise<Object | SqlWrapQueryWriteOutput>,
   toParam: () => { text: string, values: Array<*> },
   toString: void => string,
+  limit: number => SqlWrapQueryBuilder,
 |};
