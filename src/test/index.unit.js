@@ -81,10 +81,10 @@ describe('index.unit', () => {
   });
 
   describe('selectStream', () => {
-    it('should promise a results stream', () =>
-      index.selectStream('key').then(s => {
-        expect(s).to.be.instanceof(stream);
-      }));
+    it('should promise a results stream', () => {
+      const s = index.selectStream('key');
+      expect(s).to.be.instanceof(stream);
+    });
   });
 
   describe('insert', () => {
