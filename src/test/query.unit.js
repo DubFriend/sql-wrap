@@ -1,9 +1,4 @@
 // @flow
-/* eslint-disable no-unused-expressions */
-declare var describe: any;
-declare var it: any;
-declare var beforeEach: any;
-
 import _ from 'lodash';
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';

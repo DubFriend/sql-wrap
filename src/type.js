@@ -1,5 +1,4 @@
 // @flow
-
 import type { Readable } from 'stream';
 
 export type Value = number | boolean | string | null | Date;

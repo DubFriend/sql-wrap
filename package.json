@@ -10,7 +10,8 @@
   "scripts": {
     "prepublish": "gulp build",
     "test": "gulp test",
-    "init": "docker-compose --file ./deploy/docker-compose.yml stop && docker-compose --file ./deploy/docker-compose.yml rm -f  && docker-compose --file ./deploy/docker-compose.yml build && docker-compose --file ./deploy/docker-compose.yml up -d && docker-compose --file ./deploy/docker-compose.yml logs",
+    "init":
+      "docker-compose --file ./deploy/docker-compose.yml stop && docker-compose --file ./deploy/docker-compose.yml rm -f  && docker-compose --file ./deploy/docker-compose.yml build && docker-compose --file ./deploy/docker-compose.yml up -d && docker-compose --file ./deploy/docker-compose.yml logs",
     "update-install-schema": "bash ./deploy/update-install-schema.sh",
     "flow": "flow",
     "flow-typed": "flow-typed install"

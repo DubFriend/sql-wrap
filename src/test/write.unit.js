@@ -1,8 +1,4 @@
 // @flow
-declare var describe: any;
-declare var it: any;
-declare var beforeEach: any;
-
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { pool, all, clearAllTables, insert } from './sql';

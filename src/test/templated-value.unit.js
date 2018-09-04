@@ -1,8 +1,4 @@
 // @flow
-/* eslint-disable no-unused-expressions */
-declare var describe: any;
-declare var it: any;
-
 import { expect } from 'chai';
 import TemplatedValue from '../templated-value';
 
