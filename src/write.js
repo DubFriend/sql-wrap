@@ -22,24 +22,12 @@ module.exports = ({
 
   const query = createQuery({ driver, sqlType });
 
-  const prepareWriteData = (
-    d: Row | Array<Row> | void
-  ): Row | Array<Row> | void => {
-    const map = (r: Row): Row =>
-      _
-        .chain(r)
-        .omitBy(_.isUndefined)
-        .mapKeys((v, k) => sqlstring.escapeId(k))
-        .value();
-
-    if (Array.isArray(d)) {
-      return d.map(map);
-    } else if (d) {
-      return map(d);
-    } else {
-      return d;
-    }
-  };
+  const prepareWriteData = (r: Row): Row =>
+    _
+      .chain(r)
+      .omitBy(_.isUndefined)
+      .mapKeys((v, k) => sqlstring.escapeId(k))
+      .value();
 
   const reduceRowsIntoPlaceholdersAndValues = ({
     columns,
@@ -121,8 +109,8 @@ module.exports = ({
     table: string,
     rowOrRows: Row | Array<Row>
   ): Promise<{ insertId?: number }> => {
-    const rows = prepareWriteData(
-      Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows]
+    const rows = (Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows]).map(
+      prepareWriteData
     );
 
     if (rows && rows.length) {
@@ -165,8 +153,8 @@ module.exports = ({
     table: string,
     rowOrRows: Row | Array<Row>
   ): Promise<void> => {
-    const rows = prepareWriteData(
-      Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows]
+    const rows = (Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows]).map(
+      prepareWriteData
     );
 
     if (rows && rows.length) {
@@ -202,17 +190,18 @@ module.exports = ({
     updateOrUpdates: Object | Array<UpdateObject>,
     where?: UpdateWhere
   ): Promise<{ changedRows?: number }> => {
-    const updates = Array.isArray(updateOrUpdates)
-      ? _.map(updateOrUpdates, ({ update, where }) => ({
+    const updates = (Array.isArray(updateOrUpdates)
+      ? updateOrUpdates.map(({ update, where }) => ({
           update: prepareWriteData(update),
-          where: prepareWriteData(where),
+          where: where && prepareWriteData(where),
         }))
       : [
           {
             update: prepareWriteData(updateOrUpdates),
-            where: prepareWriteData(where),
+            where: where && prepareWriteData(where),
           },
-        ];
+        ]
+    ).filter(({ update }) => Object.keys(update || {}).length);
 
     if (!updates.length) {
       return Promise.resolve({});
@@ -297,8 +286,8 @@ module.exports = ({
     table: string,
     rowOrRows: Array<Object> | Object
   ): Promise<{ changedRows?: number }> => {
-    const rows = prepareWriteData(
-      Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows]
+    const rows = (Array.isArray(rowOrRows) ? rowOrRows : [rowOrRows]).map(
+      prepareWriteData
     );
 
     if (rows && rows.length) {

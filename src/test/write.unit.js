@@ -127,6 +127,14 @@ describe('write.unit', () => {
           ]);
         }));
 
+    it('should handle update of no fields', () =>
+      insert('compoundKey', { a: 'A', b: 'B' })
+        .then(() => write.update('compoundKey', {}, { a: 'A' }))
+        .then(() => all('compoundKey'))
+        .then(rows => {
+          expect(rows).to.deep.equal([{ a: 'A', b: 'B' }]);
+        }));
+
     it('should handle where in', () =>
       Promise.all([
         insert('compoundKey', { a: 'A', b: 'B' }),
