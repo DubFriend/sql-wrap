@@ -176,7 +176,7 @@ module.exports = ({
     updateOrUpdates: Object | Array<UpdateObject>,
     where?: UpdateWhere
   ): Promise<*> => {
-    const updates = Array.isArray(updateOrUpdates)
+    const updates = (Array.isArray(updateOrUpdates)
       ? _.map(updateOrUpdates, ({ update, where }) => ({
           update: prepareWriteData(update),
           where: prepareWriteData(where),
@@ -186,7 +186,8 @@ module.exports = ({
             update: prepareWriteData(updateOrUpdates),
             where: prepareWriteData(where),
           },
-        ];
+        ]
+    ).filter(({ update }: any) => Object.keys(update).length);
 
     if (!updates.length) {
       return Promise.resolve();

@@ -113,6 +113,14 @@ describe('write.unit', () => {
     it('should handle explicitly undefined column', () =>
       write.update('defaultValue', { id: 'a', default: undefined }));
 
+    it('should handle empty object update', () =>
+      insert('compoundKey', { a: 'A', b: 'B' })
+        .then(() => write.update('compoundKey', {}, { a: 'A' }))
+        .then(() => all('compoundKey'))
+        .then(rows => {
+          expect(rows).to.have.same.deep.members([{ a: 'A', b: 'B' }]);
+        }));
+
     it('should handle bulk updates', () =>
       Promise.all([
         insert('compoundKey', { a: 'A', b: 'B' }),
