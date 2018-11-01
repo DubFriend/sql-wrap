@@ -24,13 +24,7 @@ describe('index.unit', () => {
   describe('connection', () => {
     it('should get an instance of sqlWrap for a single connection', () =>
       index.connection().then(conn => {
-        expect(conn).to.have.include.keys(
-          'connection',
-          'query',
-          'select',
-          'stream',
-          'streamTable'
-        );
+        expect(conn).to.have.include.keys('connection', 'query', 'select');
       }));
   });
 
@@ -60,18 +54,6 @@ describe('index.unit', () => {
       index.selectOne('key').then(row => {
         expect(row).to.be.null;
       }));
-  });
-
-  describe('stream', () => {
-    it('should return results stream', () => {
-      expect(index.stream('SELECT * FROM `key`')).to.be.instanceof(stream);
-    });
-  });
-
-  describe('streamTable', () => {
-    it('should return results stream', () => {
-      expect(index.streamTable('key')).to.be.instanceof(stream);
-    });
   });
 
   describe('selectStream', () => {

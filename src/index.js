@@ -30,8 +30,6 @@ export type SqlWrap = {|
   select: *,
   selectOne: *,
   selectStream: *,
-  stream: *,
-  streamTable: *,
   templatedValue: *,
   update: *,
 |};
@@ -68,7 +66,7 @@ const createSqlWrap = ({
       if (driver.release && typeof driver.release === 'function') {
         driver.release();
       } else {
-        throw new TypeError('release is not a function');
+        throw new TypeError('"release" is not a function');
       }
     },
     replace: (...args: *) => write.replace(...args),
@@ -76,8 +74,6 @@ const createSqlWrap = ({
     select: (...args: *) => read.select(...args),
     selectOne: (...args: *) => read.selectOne(...args),
     selectStream: (...args: *) => read.stream(...args),
-    stream: (...args: *) => query.stream(...args),
-    streamTable: (...args: *) => read.stream(...args),
     templatedValue,
     update: (...args: *) => write.update(...args),
   };
